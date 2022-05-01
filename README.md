@@ -4,6 +4,8 @@ You can use this app to show borderless, transparent, click-through browser wind
 
 I made this app because I would often not notice my chat messages on my other monitor, and I'd prefer to have them come up on the display I'm looking at, rather than only in OBS. It's also great for single monitor streamers.
 
+<img src="assets/stream-overlay-clip.webp" />
+
 ## Download
 
 Head over to the [releases page](https://github.com/hperrin/stream-overlay/releases) to download the latest version.
@@ -13,6 +15,10 @@ Head over to the [releases page](https://github.com/hperrin/stream-overlay/relea
 Duplicate `config.template.json` in the `resources/app` folder to `config.json`, then open it (like with Notepad) and modify the values to the windows you need. Then run the "stream-overlay" app.
 
 You can also use this app from the command line, by providing the URL as the argument. Use `stream-overlay --help` to see all the available options.
+
+## Fullscreen Apps
+
+Stream Overlay doesn't work over fullscreen apps, so your app needs to be in "borderless window" or "borderless fullscreen" to allow Stream Overlay on top of it. If it's still not appearing on top, try setting it to windowed mode then back to borderless.
 
 ## Interaction
 
