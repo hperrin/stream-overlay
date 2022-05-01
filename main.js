@@ -75,9 +75,9 @@ const createWindow = (conf) => {
 
   let win = new BrowserWindow({
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'assets/preload.js'),
     },
-    icon: './logo.png',
+    icon: './assets/logo.png',
     width,
     height,
     x,
@@ -88,7 +88,7 @@ const createWindow = (conf) => {
     resizable: false,
   });
 
-  win.loadFile('page.html');
+  win.loadFile('assets/page.html');
 
   // Emitted when the window is closed.
   win.on('closed', () => {
