@@ -77,6 +77,7 @@ const createWindow = (conf) => {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    icon: './logo.png',
     width,
     height,
     x,
@@ -90,7 +91,7 @@ const createWindow = (conf) => {
   win.loadFile('page.html');
 
   // Emitted when the window is closed.
-  win.on('closed', function () {
+  win.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -100,13 +101,18 @@ const createWindow = (conf) => {
     }
   });
 
-  win.on('focus', function () {
+  const focus = () => {
     win.setIgnoreMouseEvents(false);
     win.setBackgroundColor('#ddd');
     win.webContents.send('focus');
-  });
+  };
+  win.on('focus', focus);
 
-  win.on('blur', function () {
+  if (win.isFocused()) {
+    focus();
+  }
+
+  win.on('blur', () => {
     win.setIgnoreMouseEvents(true);
     win.setBackgroundColor('rgba(0, 0, 0, 0.0)');
     win.webContents.send('blur');
