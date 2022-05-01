@@ -4,6 +4,10 @@ You can use this app to show borderless, transparent, click-through browser wind
 
 I made this app because I would often not notice my chat messages, and I'd prefer to have them come up on the display I'm looking at, rather than only in OBS. It's also great for single monitor streamers.
 
+## Download
+
+Head over to the [releases page](https://github.com/hperrin/stream-overlay/releases) to download the latest version.
+
 ## Usage
 
 Duplicate `config.template.json` in the `resources/app` folder to `config.json`, then open it (like with Notepad) and modify the values to the windows you need. Then run the "stream-overlay" app.
