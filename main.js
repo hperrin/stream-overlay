@@ -77,6 +77,11 @@ const createWindow = (conf) => {
     webPreferences: {
       preload: path.join(__dirname, 'assets', 'preload.js'),
     },
+    fullscreenable: false,
+    maximizable: false,
+    resizable: false,
+    alwaysOnTop: true,
+    title: "SylphWeed's Stream Overlay",
     icon: path.join(__dirname, 'assets', 'logo.png'),
     width,
     height,
@@ -88,16 +93,20 @@ const createWindow = (conf) => {
     resizable: false,
   });
 
+  const timer = setInterval(() => win.moveTop(), 1000);
+
   win.loadFile('assets/page.html');
 
   // Emitted when the window is closed.
   win.on('closed', () => {
+    clearInterval(timer);
+
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     const i = wins.findIndex((entry) => entry.win === win);
     if (i > -1) {
-      wins.splice(i);
+      wins.splice(i, 1);
     }
   });
 
@@ -118,6 +127,7 @@ const createWindow = (conf) => {
     win.webContents.send('blur');
   });
 
+  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   win.setAlwaysOnTop(true, 'screen-saver', 1);
   // win.webContents.openDevTools();
 
