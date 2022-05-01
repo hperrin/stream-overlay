@@ -1,7 +1,7 @@
 {
   "name": "stream-overlay",
   "version": "1.0.1",
-  "description": "An Electron app to show a borderless, transparent, click-through browser window for streaming.",
+  "description": "An app to show borderless, transparent, click-through browser windows for streaming.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
