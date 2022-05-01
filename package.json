@@ -1,0 +1,28 @@
+{
+  "name": "stream-overlay",
+  "version": "1.0.0",
+  "description": "An Electron app to show a borderless, transparent, click-through browser window for streaming.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "lint:check": "prettier .",
+    "lint:format": "prettier --write .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hperrin/stream-overlay.git"
+  },
+  "author": "Hunter Perrin <hperrin@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/hperrin/stream-overlay/issues"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "electron": "^18.2.0",
+    "prettier": "^2.6.2"
+  },
+  "dependencies": {
+    "yargs": "^17.4.1"
+  }
+}
