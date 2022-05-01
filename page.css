@@ -42,12 +42,10 @@ body.focused .drag-handle {
 }
 
 #frame {
-  /* box-sizing: border-box; */
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
 body.focused #frame {
   height: calc(100% - 30px);
-  /* border: 5px solid gray; */
 }
