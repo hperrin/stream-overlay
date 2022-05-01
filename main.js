@@ -75,9 +75,9 @@ const createWindow = (conf) => {
 
   let win = new BrowserWindow({
     webPreferences: {
-      preload: path.join(__dirname, 'assets/preload.js'),
+      preload: path.join(__dirname, 'assets', 'preload.js'),
     },
-    icon: './assets/logo.png',
+    icon: path.join(__dirname, 'assets', 'logo.png'),
     width,
     height,
     x,
