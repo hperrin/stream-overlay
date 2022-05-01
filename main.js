@@ -1,8 +1,11 @@
 const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
-const argv = yargs(hideBin(process.argv))
+
+const processArgv = hideBin(process.argv);
+const argv = yargs(processArgv)
   .scriptName('stream-overlay')
   .usage('$0 [args] <url>')
   .positional('url', {
@@ -33,12 +36,26 @@ const argv = yargs(hideBin(process.argv))
   })
   .help().argv;
 
+const configured = processArgv.length > 0;
 const url = argv._[0] || argv.url;
+const { x, y, width, height } = argv;
+const wins = [];
 
-const createWindow = () => {
-  let { x, y, width, height } = argv;
+ipcMain.handle('requestUrl', (event) => {
+  const { win, conf } = wins.find(
+    (entry) => event.sender === entry.win.webContents
+  );
+  win.webContents.send('url', conf.url);
+});
+ipcMain.handle('requestClose', (event) => {
+  const { win } = wins.find((entry) => event.sender === entry.win.webContents);
+  win.close();
+});
 
-  if (width < 30 || height < 30) {
+const createWindow = (conf) => {
+  let { x, y, width, height } = conf;
+
+  if (width < 45 || height < 30) {
     console.error("You're trying to make the window too small.");
     app.exit(1);
   }
@@ -70,9 +87,6 @@ const createWindow = () => {
     resizable: false,
   });
 
-  ipcMain.handle('requestUrl', () => win.webContents.send('url', url));
-  ipcMain.handle('requestClose', () => win.close());
-
   win.loadFile('page.html');
 
   // Emitted when the window is closed.
@@ -80,7 +94,10 @@ const createWindow = () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    win = null;
+    const i = wins.findIndex((entry) => entry.win === win);
+    if (i > -1) {
+      wins.splice(i);
+    }
   });
 
   win.on('focus', function () {
@@ -97,13 +114,50 @@ const createWindow = () => {
 
   win.setAlwaysOnTop(true, 'screen-saver', 1);
   // win.webContents.openDevTools();
+
+  wins.push({ win, conf });
+};
+
+const createWindows = () => {
+  const configPath = path.resolve(__dirname, 'config.json');
+  if (!configured && fs.existsSync(configPath)) {
+    try {
+      const config = JSON.parse(fs.readFileSync(configPath));
+      if (!Array.isArray(config)) {
+        throw new Error('Config is not an array.');
+      }
+      if (config.length < 1) {
+        throw new Error('Config array is empty.');
+      }
+      for (let entry of config) {
+        const { url, height, width, x, y } = entry;
+        if (
+          typeof url !== 'string' ||
+          typeof height !== 'number' ||
+          typeof width !== 'number' ||
+          typeof x !== 'number' ||
+          typeof y !== 'number'
+        ) {
+          throw new Error(
+            'Config entry is not valid: ' + JSON.stringify(entry)
+          );
+        }
+        createWindow(entry);
+      }
+    } catch (e) {
+      console.error('Error reading config file: ' + e);
+      app.exit(1);
+    }
+  } else {
+    createWindow({ url, x, y, width, height });
+  }
 };
 
 app.whenReady().then(() => {
-  createWindow();
+  createWindows();
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createWindows();
   });
 });
 
