@@ -6,7 +6,7 @@ I made this app because I would often not notice my chat messages, and I'd prefe
 
 ## Usage
 
-Duplicate `config.template.json` in the app's folder to `config.json`, then open it (like with Notepad) and modify the values to the windows you need. Then run the "stream-overlay" app.
+Duplicate `config.template.json` in the `resources/app` folder to `config.json`, then open it (like with Notepad) and modify the values to the windows you need. Then run the "stream-overlay" app.
 
 You can also use this app from the command line, by providing the URL as the argument. Use `stream-overlay --help` to see all the available options.
 
