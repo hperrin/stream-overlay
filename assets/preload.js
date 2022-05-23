@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
   onFocus: (callback) => ipcRenderer.on('focus', callback),
   onBlur: (callback) => ipcRenderer.on('blur', callback),
-  url: (callback) => ipcRenderer.on('url', callback),
-  requestUrl: () => ipcRenderer.invoke('requestUrl'),
+  config: (callback) => ipcRenderer.on('config', callback),
+  requestConfig: () => ipcRenderer.invoke('requestConfig'),
   requestClose: () => ipcRenderer.invoke('requestClose'),
 });

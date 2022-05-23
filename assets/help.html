@@ -45,23 +45,63 @@
       available options.
     </p>
 
+    <h2>Interaction</h2>
+
+    <p>
+      You can see a list of your windows from the "Sylphweed's Stream Overlay"
+      tray icon. Right click the icon to show the menu. You can also exit the
+      app from here.
+    </p>
+
+    <p>
+      When a window is focused (by clicking it from the tray icon menu) it will
+      have an opaque background, and a handle to drag it around. Once it loses
+      focus, it will go back to transparent, and will ignore all mouse events.
+      It will be click-through, so you can click the apps behind it.
+    </p>
+
     <h2>Fullscreen Apps</h2>
 
     <p>
       Stream Overlay doesn't work over fullscreen apps, so your app needs to be
-      in "borderless window" or "borderless fullscreen" to allow Stream Overlay
-      on top of it. If it's still not appearing on top, try setting it to
-      windowed mode then back to borderless.
+      in "borderless" or "borderless fullscreen" to allow Stream Overlay on top
+      of it. If it's still not appearing on top, try setting it to windowed mode
+      then back to borderless.
     </p>
 
-    <h2>Interaction</h2>
+    <h2>Config Options</h2>
 
-    <p>
-      When a window is focused (by clicking it on the taskbar/dock) it will have
-      an opaque background, and a handle to drag it around. Once it loses focus,
-      it will go back to transparent, and will ignore all mouse events. It will
-      be click-through, so you can click the apps behind it.
-    </p>
+    <p>These are the available options for each config entry (window):</p>
+
+    <ul>
+      <li><code>title</code>: The window title.</li>
+      <li><code>url</code>: The URL of the page to show in the window.</li>
+      <li>
+        <code>width</code>: The width, in pixels, of the window, if it's not
+        full screen.
+      </li>
+      <li>
+        <code>height</code>: The height, in pixels, of the window, if it's not
+        full screen.
+      </li>
+      <li>
+        <code>x</code>: The X coordinate, in pixels, of the window, if it's not
+        full screen.
+      </li>
+      <li>
+        <code>y</code>: The Y coordinate, in pixels, of the window, if it's not
+        full screen.
+      </li>
+      <li>
+        <code>opacity</code>: The opacity of the window as a number between 0
+        and 1, inclusive. This is not implemented in Linux.
+      </li>
+      <li>
+        <code>fullscreen</code>: Whether the window should be positioned full
+        screen. (true/false) Be careful with this, as opaque windows can obscure
+        your screen.
+      </li>
+    </ul>
 
     <h2>Support Me</h2>
 

@@ -1,5 +1,6 @@
 [
   {
+    "title": "Chat",
     "url": "https://streamlabs.com/widgets/chat-box/v1/YOURSECRETCODE",
     "width": 450,
     "height": 650,
@@ -7,6 +8,7 @@
     "y": -1
   },
   {
+    "title": "Alerts",
     "url": "https://streamlabs.com/alert-box/v3/YOURSECRETCODE",
     "width": 600,
     "height": 600,

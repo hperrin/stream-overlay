@@ -1,8 +1,10 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
+const { app, BrowserWindow, ipcMain, screen, Menu, Tray } = require('electron');
+const pkg = require(path.resolve(__dirname, 'package.json'));
 
 const processArgv = hideBin(process.argv);
 const argv = yargs(processArgv)
@@ -11,6 +13,12 @@ const argv = yargs(processArgv)
   .positional('url', {
     describe: 'The URL of the page',
     default: './help.html',
+  })
+  .option('title', {
+    alias: 't',
+    type: 'string',
+    default: 'Stream Overlay',
+    description: 'Window title',
   })
   .option('width', {
     alias: 'w',
@@ -34,18 +42,31 @@ const argv = yargs(processArgv)
     default: -1,
     description: 'Window Y position (-1 for centered)',
   })
+  .option('opacity', {
+    alias: 'o',
+    type: 'number',
+    default: 1,
+    description: 'Window opacity (0 transparent to 1 opaque)',
+  })
+  .option('fullscreen', {
+    alias: 'f',
+    type: 'boolean',
+    default: false,
+    description:
+      'Make the window full screen (width, height, x, and y are ignored)',
+  })
   .help().argv;
 
 const configured = processArgv.length > 0;
 const url = argv._[0] || argv.url;
-const { x, y, width, height } = argv;
+const { x, y, width, height, title, opacity, fullscreen } = argv;
 const wins = [];
 
-ipcMain.handle('requestUrl', (event) => {
+ipcMain.handle('requestConfig', (event) => {
   const { win, conf } = wins.find(
     (entry) => event.sender === entry.win.webContents
   );
-  win.webContents.send('url', conf.url);
+  win.webContents.send('config', conf);
 });
 ipcMain.handle('requestClose', (event) => {
   const { win } = wins.find((entry) => event.sender === entry.win.webContents);
@@ -53,7 +74,15 @@ ipcMain.handle('requestClose', (event) => {
 });
 
 const createWindow = (conf) => {
-  let { x, y, width, height } = conf;
+  let {
+    x = -1,
+    y = -1,
+    width = 450,
+    height = 650,
+    title = 'Stream Overlay',
+    opacity = 1,
+    fullscreen = false,
+  } = conf;
 
   if (width < 45 || height < 30) {
     console.error("You're trying to make the window too small.");
@@ -77,11 +106,10 @@ const createWindow = (conf) => {
     webPreferences: {
       preload: path.join(__dirname, 'assets', 'preload.js'),
     },
-    fullscreenable: false,
     maximizable: false,
     resizable: false,
     alwaysOnTop: true,
-    title: "SylphWeed's Stream Overlay",
+    title,
     icon: path.join(__dirname, 'assets', 'logo.png'),
     width,
     height,
@@ -91,6 +119,9 @@ const createWindow = (conf) => {
     frame: false,
     movable: true,
     resizable: false,
+    skipTaskbar: true,
+    opacity,
+    fullscreen,
   });
 
   const timer = setInterval(() => win.moveTop(), 1000);
@@ -134,47 +165,109 @@ const createWindow = (conf) => {
   wins.push({ win, conf });
 };
 
+let config = [];
+
 const createWindows = () => {
+  for (let entry of config) {
+    createWindow(entry);
+  }
+};
+
+let tray = null;
+app.whenReady().then(() => {
   const configPath = path.resolve(__dirname, 'config.json');
   if (!configured && fs.existsSync(configPath)) {
     try {
-      const config = JSON.parse(fs.readFileSync(configPath));
-      if (!Array.isArray(config)) {
+      const userConfig = JSON.parse(fs.readFileSync(configPath).toString());
+      if (!Array.isArray(userConfig)) {
         throw new Error('Config is not an array.');
       }
-      if (config.length < 1) {
+      if (userConfig.length < 1) {
         throw new Error('Config array is empty.');
       }
-      for (let entry of config) {
-        const { url, height, width, x, y } = entry;
-        if (
-          typeof url !== 'string' ||
-          typeof height !== 'number' ||
-          typeof width !== 'number' ||
-          typeof x !== 'number' ||
-          typeof y !== 'number'
-        ) {
+      for (let entry of userConfig) {
+        const { url } = entry;
+        if (typeof url !== 'string') {
           throw new Error(
-            'Config entry is not valid: ' + JSON.stringify(entry)
+            'Config entry is not valid (url is required): ' +
+              JSON.stringify(entry)
           );
         }
-        createWindow(entry);
+        config.push(entry);
       }
     } catch (e) {
       console.error('Error reading config file: ' + e);
       app.exit(1);
     }
   } else {
-    createWindow({ url, x, y, width, height });
+    config.push({ title, url, x, y, width, height, opacity, fullscreen });
   }
-};
 
-app.whenReady().then(() => {
   createWindows();
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindows();
   });
+
+  const makeTray = (updateAvailable = false) => {
+    if (tray) {
+      tray.destroy();
+    }
+    tray = new Tray(path.resolve(__dirname, 'assets', 'logo.png'));
+    const contextMenu = Menu.buildFromTemplate([
+      ...config.map((entry, index) => ({
+        label: entry.title || 'Window ' + (index + 1),
+        click: async () => {
+          const { win } = wins.find((check) => entry === check.conf) || {};
+          if (win) {
+            win.focus();
+          } else {
+            createWindow(entry);
+          }
+        },
+      })),
+      { type: 'separator' },
+      {
+        label: 'Homepage' + (updateAvailable ? ' (Update Available)' : ''),
+        click: async () => {
+          const { shell } = require('electron');
+          await shell.openExternal('https://github.com/hperrin/stream-overlay');
+        },
+      },
+      { type: 'separator' },
+      {
+        label: 'Quit',
+        click: async () => {
+          app.quit();
+        },
+      },
+    ]);
+    tray.setToolTip("SylphWeed's Stream Overlay");
+    tray.setContextMenu(contextMenu);
+  };
+
+  makeTray();
+  const req = https.request(
+    {
+      hostname: 'github.com',
+      port: 443,
+      path: '/hperrin/stream-overlay/releases/latest',
+      method: 'HEAD',
+    },
+    (res) => {
+      if (
+        res.statusCode !== 302 ||
+        !res.headers.location.endsWith('v' + pkg.version)
+      ) {
+        makeTray(true);
+      }
+    }
+  );
+
+  req.on('error', (e) => {
+    console.error('Update check error: ', e);
+  });
+  req.end();
 });
 
 app.on('window-all-closed', () => {
