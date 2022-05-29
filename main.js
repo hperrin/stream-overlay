@@ -76,6 +76,12 @@ ipcMain.handle('requestClose', (event) => {
   const { win } = wins.find((entry) => event.sender === entry.win.webContents);
   win.close();
 });
+ipcMain.handle('requestFocusEvent', (event) => {
+  const { win } = wins.find((entry) => event.sender === entry.win.webContents);
+  if (win.isFocused()) {
+    win.webContents.send('focus');
+  }
+});
 
 const createWindow = (conf) => {
   let {
