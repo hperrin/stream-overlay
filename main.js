@@ -1,65 +1,69 @@
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
+const { program, Option } = require('commander');
 const { app, BrowserWindow, ipcMain, screen, Menu, Tray } = require('electron');
 const pkg = require(path.resolve(__dirname, 'package.json'));
 
-const processArgv = hideBin(process.argv);
-const argv = yargs(processArgv)
-  .scriptName('stream-overlay')
-  .usage('$0 [args] <url>')
-  .positional('url', {
-    describe: 'The URL of the page',
-    default: './help.html',
-  })
-  .option('title', {
-    alias: 't',
-    type: 'string',
-    default: 'Stream Overlay',
-    description: 'Window title',
-  })
-  .option('width', {
-    alias: 'w',
-    type: 'number',
-    default: 450,
-    description: 'Window width',
-  })
-  .option('height', {
-    alias: 'h',
-    type: 'number',
-    default: 650,
-    description: 'Window height',
-  })
-  .option('x', {
-    type: 'number',
-    default: -1,
-    description: 'Window X position (-1 for centered)',
-  })
-  .option('y', {
-    type: 'number',
-    default: -1,
-    description: 'Window Y position (-1 for centered)',
-  })
-  .option('opacity', {
-    alias: 'o',
-    type: 'number',
-    default: 1,
-    description: 'Window opacity (0 transparent to 1 opaque)',
-  })
-  .option('fullscreen', {
-    alias: 'f',
-    type: 'boolean',
-    default: false,
-    description:
-      'Make the window full screen (width, height, x, and y are ignored)',
-  })
-  .help().argv;
+program
+  .name(pkg.name)
+  .description(pkg.description)
+  .version(pkg.version, '-v, --version', 'Print the current version');
 
-const configured = processArgv.length > 0;
-const url = argv._[0] || argv.url;
-const { x, y, width, height, title, opacity, fullscreen } = argv;
+program
+  .option(
+    '-u, --url <url>',
+    'The URL of the page to open. This takes precedence over the passed config file',
+    './help.html'
+  )
+  .option('-t, --title <title>', 'Window title', 'Stream Overlay')
+  .addOption(
+    new Option('-w, --width <width>', 'Window width')
+      .default(450)
+      .argParser(parseFloat)
+  )
+  .addOption(
+    new Option('-h, --height <height>', 'Window height')
+      .default(650)
+      .argParser(parseFloat)
+  )
+  .addOption(
+    new Option('-x <x_coord>', 'Window X position (-1 for centered)')
+      .default(-1, 'centered horizontally')
+      .argParser(parseFloat)
+  )
+  .addOption(
+    new Option('-y <y_coord>', 'Window Y position (-1 for centered)')
+      .default(-1, 'centered vertically')
+      .argParser(parseFloat)
+  )
+  .addOption(
+    new Option(
+      '-o, --opacity <opacity>',
+      "Window opacity (0 transparent to 1 opaque) (doesn't work on Linux)"
+    )
+      .default(1)
+      .argParser(parseFloat)
+  )
+  .option(
+    '-f, --fullscreen',
+    'Make the window full screen (width, height, x, and y are ignored)'
+  )
+  .argument(
+    '[configfile]',
+    'The path to a config file',
+    path.resolve(__dirname, 'config.json')
+  );
+
+let configured = false;
+program.on('option:url', () => (configured = true));
+program.parse();
+const configFile = program.args.length
+  ? path.resolve(program.args[0])
+  : path.resolve(__dirname, 'config.json');
+const options = program.opts();
+const { url, x, y, width, height, title, opacity, fullscreen } = options;
+
 const wins = [];
 
 ipcMain.handle('requestConfig', (event) => {
@@ -175,10 +179,9 @@ const createWindows = () => {
 
 let tray = null;
 app.whenReady().then(() => {
-  const configPath = path.resolve(__dirname, 'config.json');
-  if (!configured && fs.existsSync(configPath)) {
+  if (!configured && fs.existsSync(configFile)) {
     try {
-      const userConfig = JSON.parse(fs.readFileSync(configPath).toString());
+      const userConfig = JSON.parse(fs.readFileSync(configFile).toString());
       if (!Array.isArray(userConfig)) {
         throw new Error('Config is not an array.');
       }
