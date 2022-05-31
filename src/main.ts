@@ -1,9 +1,41 @@
-const path = require('path');
-const fs = require('fs');
-const https = require('https');
-const { program, Option } = require('commander');
-const { app, BrowserWindow, ipcMain, screen, Menu, Tray } = require('electron');
-const pkg = require(path.resolve(__dirname, 'package.json'));
+import path from 'path';
+import fs from 'fs';
+import https from 'https';
+import { program, Option } from 'commander';
+import {
+  app,
+  session,
+  protocol,
+  BrowserWindow,
+  ipcMain,
+  screen,
+  Menu,
+  Tray,
+} from 'electron';
+
+const pkg = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString()
+);
+
+const DEV = process.env.NODE_ENV !== 'production';
+const DEFAULT_TITLE = 'Stream Overlay';
+const DEFAULT_WIDTH = 550;
+const DEFAULT_HEIGHT = 650;
+const DEFAULT_X = -1;
+const DEFAULT_Y = -1;
+const DEFAULT_OPACITY = 1;
+const DEFAULT_FULLSCREEN = false;
+
+type Conf = {
+  url: string;
+  title?: string;
+  width?: number;
+  height?: number;
+  x?: number;
+  y?: number;
+  opacity?: number;
+  fullscreen?: boolean;
+};
 
 program
   .name(pkg.name)
@@ -16,25 +48,25 @@ program
     'The URL of the page to open. This takes precedence over the passed config file',
     './help.html'
   )
-  .option('-t, --title <title>', 'Window title', 'Stream Overlay')
+  .option('-t, --title <title>', 'Window title', DEFAULT_TITLE)
   .addOption(
     new Option('-w, --width <width>', 'Window width')
-      .default(450)
+      .default(DEFAULT_WIDTH)
       .argParser(parseFloat)
   )
   .addOption(
     new Option('-h, --height <height>', 'Window height')
-      .default(650)
+      .default(DEFAULT_HEIGHT)
       .argParser(parseFloat)
   )
   .addOption(
     new Option('-x <x_coord>', 'Window X position (-1 for centered)')
-      .default(-1, 'centered horizontally')
+      .default(DEFAULT_X, 'centered horizontally')
       .argParser(parseFloat)
   )
   .addOption(
     new Option('-y <y_coord>', 'Window Y position (-1 for centered)')
-      .default(-1, 'centered vertically')
+      .default(DEFAULT_Y, 'centered vertically')
       .argParser(parseFloat)
   )
   .addOption(
@@ -42,17 +74,19 @@ program
       '-o, --opacity <opacity>',
       "Window opacity (0 transparent to 1 opaque) (doesn't work on Linux)"
     )
-      .default(1)
+      .default(DEFAULT_OPACITY)
       .argParser(parseFloat)
   )
-  .option(
-    '-f, --fullscreen',
-    'Make the window full screen (width, height, x, and y are ignored)'
+  .addOption(
+    new Option(
+      '-f, --fullscreen',
+      'Make the window full screen (width, height, x, and y are ignored)'
+    ).default(DEFAULT_FULLSCREEN)
   )
   .argument(
     '[configfile]',
     'The path to a config file',
-    path.resolve(__dirname, 'config.json')
+    path.resolve(__dirname, '..', 'config.json')
   );
 
 let configured = false;
@@ -60,42 +94,49 @@ program.on('option:url', () => (configured = true));
 program.parse();
 const configFile = program.args.length
   ? path.resolve(program.args[0])
-  : path.resolve(__dirname, 'config.json');
+  : path.resolve(__dirname, '..', 'config.json');
 const options = program.opts();
 const { url, x, y, width, height, title, opacity, fullscreen } = options;
 
-const wins = [];
+const wins: {
+  conf: Conf;
+  win: BrowserWindow;
+}[] = [];
+let settingsWindow: BrowserWindow | undefined;
 
 ipcMain.handle('requestConfig', (event) => {
-  const { win, conf } = wins.find(
-    (entry) => event.sender === entry.win.webContents
-  );
-  win.webContents.send('config', conf);
+  const entry = wins.find((entry) => event.sender === entry.win.webContents);
+  if (entry) {
+    const { conf } = entry;
+    event.sender.send('config', conf);
+  }
 });
 ipcMain.handle('requestClose', (event) => {
-  const { win } = wins.find((entry) => event.sender === entry.win.webContents);
-  win.close();
+  const win = BrowserWindow.fromWebContents(event.sender);
+  win?.close();
 });
 ipcMain.handle('requestFocusEvent', (event) => {
-  const { win } = wins.find((entry) => event.sender === entry.win.webContents);
-  if (win.isFocused()) {
-    win.webContents.send('focus');
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win?.isFocused()) {
+    event.sender.send('focus');
   }
 });
 
-const createWindow = (conf) => {
+const createOverlayWindow = (conf: Conf) => {
   let {
-    x = -1,
-    y = -1,
-    width = 450,
-    height = 650,
-    title = 'Stream Overlay',
-    opacity = 1,
-    fullscreen = false,
+    x = DEFAULT_X,
+    y = DEFAULT_Y,
+    width = DEFAULT_WIDTH,
+    height = DEFAULT_HEIGHT,
+    title = DEFAULT_TITLE,
+    opacity = DEFAULT_OPACITY,
+    fullscreen = DEFAULT_FULLSCREEN,
   } = conf;
 
-  if (width < 45 || height < 30) {
-    console.error("You're trying to make the window too small.");
+  if (!fullscreen && (width < 45 || height < 30)) {
+    console.error(
+      "You're trying to make the window too small. Min width is 45 and min height is 30."
+    );
     app.exit(1);
   }
 
@@ -114,13 +155,13 @@ const createWindow = (conf) => {
 
   let win = new BrowserWindow({
     webPreferences: {
-      preload: path.join(__dirname, 'assets', 'preload.js'),
+      preload: path.join(__dirname, '..', 'assets', 'preload.js'),
     },
     maximizable: false,
     resizable: false,
     alwaysOnTop: true,
     title,
-    icon: path.join(__dirname, 'assets', 'logo.png'),
+    icon: path.join(__dirname, '..', 'assets', 'logo.png'),
     width,
     height,
     x,
@@ -128,7 +169,6 @@ const createWindow = (conf) => {
     transparent: true,
     frame: false,
     movable: true,
-    resizable: false,
     skipTaskbar: true,
     opacity,
     fullscreen,
@@ -136,7 +176,7 @@ const createWindow = (conf) => {
 
   const timer = setInterval(() => win.moveTop(), 1000);
 
-  win.loadFile('assets/page.html');
+  win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
 
   // Emitted when the window is closed.
   win.on('closed', () => {
@@ -175,38 +215,83 @@ const createWindow = (conf) => {
   wins.push({ win, conf });
 };
 
-let config = [];
+const createSettingsWindow = () => {
+  if (settingsWindow) {
+    settingsWindow.focus();
+    return;
+  }
+
+  settingsWindow = new BrowserWindow({
+    webPreferences: {
+      partition: 'persist:settings',
+      preload: path.join(__dirname, '..', 'assets', 'preload.js'),
+    },
+    title: 'Stream Overlay Setup',
+    icon: path.join(__dirname, '..', 'assets', 'logo.png'),
+    width: 800,
+    height: 600,
+    autoHideMenuBar: true,
+  });
+
+  // if (DEV) {
+  //   settingsWindow.loadURL('http://localhost:3000');
+  // } else {
+  settingsWindow.loadFile('/app/build/index.html');
+  // }
+
+  // settingsWindow.webContents.openDevTools();
+
+  settingsWindow.on('close', () => {
+    settingsWindow = undefined;
+  });
+};
+
+let config: Conf[] = [];
 
 const createWindows = () => {
   for (let entry of config) {
-    createWindow(entry);
+    createOverlayWindow(entry);
   }
 };
 
-let tray = null;
+let tray: Tray | undefined;
+app.on('open-file', (event, path) => {});
 app.whenReady().then(() => {
-  if (!configured && fs.existsSync(configFile)) {
-    try {
-      const userConfig = JSON.parse(fs.readFileSync(configFile).toString());
-      if (!Array.isArray(userConfig)) {
-        throw new Error('Config is not an array.');
-      }
-      if (userConfig.length < 1) {
-        throw new Error('Config array is empty.');
-      }
-      for (let entry of userConfig) {
-        const { url } = entry;
-        if (typeof url !== 'string') {
-          throw new Error(
-            'Config entry is not valid (url is required): ' +
-              JSON.stringify(entry)
-          );
+  const partition = 'persist:settings';
+  const ses = session.fromPartition(partition);
+
+  ses.protocol.interceptFileProtocol('file', (request, callback) => {
+    const url = request.url.substr(7);
+    console.log(url, path.normalize(`${__dirname}/../${url}`));
+    callback({ path: path.normalize(`${__dirname}/../${url}`) });
+  });
+
+  if (!configured) {
+    if (fs.existsSync(configFile)) {
+      try {
+        const userConfig = JSON.parse(fs.readFileSync(configFile).toString());
+        if (!Array.isArray(userConfig)) {
+          throw new Error('Config is not an array.');
         }
-        config.push(entry);
+        if (userConfig.length < 1) {
+          throw new Error('Config array is empty.');
+        }
+        for (let entry of userConfig) {
+          const { url } = entry;
+          if (typeof url !== 'string') {
+            throw new Error(
+              'Config entry is not valid (url is required): ' +
+                JSON.stringify(entry)
+            );
+          }
+          config.push(entry);
+        }
+      } catch (e) {
+        console.error('Error reading config file: ' + e);
+        app.exit(1);
       }
-    } catch (e) {
-      console.error('Error reading config file: ' + e);
-      app.exit(1);
+    } else {
+      createSettingsWindow();
     }
   } else {
     config.push({ title, url, x, y, width, height, opacity, fullscreen });
@@ -222,7 +307,7 @@ app.whenReady().then(() => {
     if (tray) {
       tray.destroy();
     }
-    tray = new Tray(path.resolve(__dirname, 'assets', 'logo.png'));
+    tray = new Tray(path.resolve(__dirname, '..', 'assets', 'logo.png'));
     const contextMenu = Menu.buildFromTemplate([
       ...config.map((entry, index) => ({
         label: entry.title || 'Window ' + (index + 1),
@@ -231,11 +316,17 @@ app.whenReady().then(() => {
           if (win) {
             win.focus();
           } else {
-            createWindow(entry);
+            createOverlayWindow(entry);
           }
         },
       })),
       { type: 'separator' },
+      {
+        label: 'Setup',
+        click: () => {
+          createSettingsWindow();
+        },
+      },
       {
         label: 'Homepage' + (updateAvailable ? ' (Update Available)' : ''),
         click: async () => {
@@ -266,7 +357,7 @@ app.whenReady().then(() => {
     (res) => {
       if (
         res.statusCode !== 302 ||
-        !res.headers.location.endsWith('v' + pkg.version)
+        !res.headers.location?.endsWith('v' + pkg.version)
       ) {
         makeTray(true);
       }
