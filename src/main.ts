@@ -5,9 +5,11 @@ import { program, Option } from 'commander';
 import {
   app,
   session,
-  BrowserWindow,
+  dialog,
   ipcMain,
   screen,
+  shell,
+  BrowserWindow,
   Menu,
   Tray,
 } from 'electron';
@@ -101,7 +103,7 @@ const wins: {
   conf: Conf;
   win: BrowserWindow;
 }[] = [];
-let settingsWindow: BrowserWindow | undefined;
+let configEditorWindow: BrowserWindow | undefined;
 let helpWindow: BrowserWindow | undefined;
 
 ipcMain.handle('requestConfig', (event) => {
@@ -121,6 +123,37 @@ ipcMain.handle('requestFocusEvent', (event) => {
     event.sender.send('focus');
   }
 });
+ipcMain.handle('requestConfigFile', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    dialog
+      .showOpenDialog(win, {
+        title: 'Open Config File',
+        properties: ['openFile'],
+        filters: [
+          { name: 'Stream Overlay Config', extensions: ['soconfig', 'json'] },
+          { name: 'All Files', extensions: ['*'] },
+        ],
+      })
+      .then((result) => {
+        if (!result.canceled) {
+          try {
+            const filename = result.filePaths[0];
+            const basename = path.basename(filename);
+            const json = fs.readFileSync(result.filePaths[0]).toString();
+            const config = JSON.parse(json);
+
+            event.sender.send('configFile', { filename, basename, config });
+          } catch (e: any) {
+            dialog.showErrorBox("Can't open config file.", e.message);
+          }
+        }
+      })
+      .catch((err) => {
+        dialog.showErrorBox('Error opening file.', `${err}`);
+      });
+  }
+});
 ipcMain.handle('requestHelp', (_event) => {
   createHelpWindow();
 });
@@ -137,7 +170,8 @@ const createOverlayWindow = (conf: Conf) => {
   } = conf;
 
   if (!fullscreen && (width < 45 || height < 30)) {
-    console.error(
+    dialog.showErrorBox(
+      'Invalid Config',
       "You're trying to make the window too small. Min width is 45 and min height is 30."
     );
     app.exit(1);
@@ -218,9 +252,9 @@ const createOverlayWindow = (conf: Conf) => {
   wins.push({ win, conf });
 };
 
-const createSettingsWindow = () => {
-  if (settingsWindow) {
-    settingsWindow.focus();
+const createConfigEditorWindow = () => {
+  if (configEditorWindow) {
+    configEditorWindow.focus();
     return;
   }
 
@@ -228,24 +262,24 @@ const createSettingsWindow = () => {
   const { width: displayWidth, height: displayHeight } =
     primaryDisplay.workAreaSize;
 
-  settingsWindow = new BrowserWindow({
+  configEditorWindow = new BrowserWindow({
     webPreferences: {
       partition: 'persist:settings',
       preload: path.join(__dirname, '..', 'assets', 'preload.js'),
     },
-    title: 'Setup',
+    title: 'Config Editor',
     icon: path.join(__dirname, '..', 'assets', 'logo.png'),
     width: Math.min(displayWidth * 0.8, 1024),
     height: Math.min(displayHeight * 0.8, 768),
     autoHideMenuBar: true,
   });
 
-  // settingsWindow.loadURL('http://localhost:3000');
-  settingsWindow.loadFile('/app/build/index.html');
-  // settingsWindow.webContents.openDevTools();
+  // configEditorWindow.loadURL('http://localhost:3000');
+  configEditorWindow.loadFile('/app/build/index.html');
+  // configEditorWindow.webContents.openDevTools();
 
-  settingsWindow.on('close', () => {
-    settingsWindow = undefined;
+  configEditorWindow.on('close', () => {
+    configEditorWindow = undefined;
   });
 };
 
@@ -272,6 +306,11 @@ const createHelpWindow = () => {
   helpWindow.on('close', () => {
     helpWindow = undefined;
   });
+
+  helpWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 };
 
 let config: Conf[] = [];
@@ -289,8 +328,7 @@ app.whenReady().then(() => {
   const ses = session.fromPartition(partition);
 
   ses.protocol.interceptFileProtocol('file', (request, callback) => {
-    const url = request.url.substr(7);
-    console.log(url, path.normalize(`${__dirname}/../${url}`));
+    const url = request.url.substring(7);
     callback({ path: path.normalize(`${__dirname}/../${url}`) });
   });
 
@@ -314,12 +352,12 @@ app.whenReady().then(() => {
           }
           config.push(entry);
         }
-      } catch (e) {
-        console.error('Error reading config file: ' + e);
+      } catch (e: any) {
+        dialog.showErrorBox('Error reading config file.', e.message);
         app.exit(1);
       }
     } else {
-      createSettingsWindow();
+      createConfigEditorWindow();
     }
   } else {
     config.push({ title, url, x, y, width, height, opacity, fullscreen });
@@ -350,9 +388,9 @@ app.whenReady().then(() => {
       })),
       { type: 'separator' },
       {
-        label: 'Setup',
+        label: 'Config Editor',
         click: () => {
-          createSettingsWindow();
+          createConfigEditorWindow();
         },
       },
       {

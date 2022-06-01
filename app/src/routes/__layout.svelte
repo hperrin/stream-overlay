@@ -1,7 +1,14 @@
 <svelte:head>
   <style>
-    html {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    html,
+    body,
+    body > div {
+      width: 100%;
+      height: 100%;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto,
+        'Helvetica Neue' 'Noto Sans', 'Liberation Sans', Arial, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
     }
   </style>
 </svelte:head>
@@ -11,7 +18,9 @@
 {:else}
   <Flatly />
 {/if}
-<slot />
+<div style="padding: 1em; height: 100%;">
+  <slot />
+</div>
 
 <Bootstrap />
 
