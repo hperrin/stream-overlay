@@ -4,7 +4,7 @@ You can use this app to show borderless, transparent, click-through browser wind
 
 I made this app because I would often not notice my chat messages on my other monitor, and I'd prefer to have them come up on the display I'm looking at, rather than only in OBS. It's also great for single monitor streamers.
 
-<img src="assets/stream-overlay-clip.webp" />
+<img src="app/static/stream-overlay-clip.webp" />
 
 ## Download
 

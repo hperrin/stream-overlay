@@ -257,6 +257,7 @@ const createHelpWindow = () => {
 
   helpWindow = new BrowserWindow({
     webPreferences: {
+      partition: 'persist:settings',
       preload: path.join(__dirname, '..', 'assets', 'preload.js'),
     },
     title: 'Help',
@@ -266,7 +267,7 @@ const createHelpWindow = () => {
     autoHideMenuBar: true,
   });
 
-  helpWindow.loadFile('assets/help.html');
+  helpWindow.loadFile('/app/build/help.html');
 
   helpWindow.on('close', () => {
     helpWindow = undefined;
