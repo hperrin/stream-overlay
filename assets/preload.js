@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestFocusEvent: () => ipcRenderer.invoke('requestFocusEvent'),
   requestConfig: () => ipcRenderer.invoke('requestConfig'),
   requestClose: () => ipcRenderer.invoke('requestClose'),
+  requestHelp: () => ipcRenderer.invoke('requestHelp'),
 });

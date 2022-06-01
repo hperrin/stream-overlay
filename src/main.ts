@@ -5,7 +5,6 @@ import { program, Option } from 'commander';
 import {
   app,
   session,
-  protocol,
   BrowserWindow,
   ipcMain,
   screen,
@@ -103,6 +102,7 @@ const wins: {
   win: BrowserWindow;
 }[] = [];
 let settingsWindow: BrowserWindow | undefined;
+let helpWindow: BrowserWindow | undefined;
 
 ipcMain.handle('requestConfig', (event) => {
   const entry = wins.find((entry) => event.sender === entry.win.webContents);
@@ -120,6 +120,9 @@ ipcMain.handle('requestFocusEvent', (event) => {
   if (win?.isFocused()) {
     event.sender.send('focus');
   }
+});
+ipcMain.handle('requestHelp', (_event) => {
+  createHelpWindow();
 });
 
 const createOverlayWindow = (conf: Conf) => {
@@ -221,24 +224,24 @@ const createSettingsWindow = () => {
     return;
   }
 
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: displayWidth, height: displayHeight } =
+    primaryDisplay.workAreaSize;
+
   settingsWindow = new BrowserWindow({
     webPreferences: {
       partition: 'persist:settings',
       preload: path.join(__dirname, '..', 'assets', 'preload.js'),
     },
-    title: 'Stream Overlay Setup',
+    title: 'Setup',
     icon: path.join(__dirname, '..', 'assets', 'logo.png'),
-    width: 800,
-    height: 600,
+    width: Math.min(displayWidth * 0.8, 1024),
+    height: Math.min(displayHeight * 0.8, 768),
     autoHideMenuBar: true,
   });
 
-  // if (DEV) {
-  //   settingsWindow.loadURL('http://localhost:3000');
-  // } else {
+  // settingsWindow.loadURL('http://localhost:3000');
   settingsWindow.loadFile('/app/build/index.html');
-  // }
-
   // settingsWindow.webContents.openDevTools();
 
   settingsWindow.on('close', () => {
@@ -246,9 +249,33 @@ const createSettingsWindow = () => {
   });
 };
 
+const createHelpWindow = () => {
+  if (helpWindow) {
+    helpWindow.focus();
+    return;
+  }
+
+  helpWindow = new BrowserWindow({
+    webPreferences: {
+      preload: path.join(__dirname, '..', 'assets', 'preload.js'),
+    },
+    title: 'Help',
+    icon: path.join(__dirname, '..', 'assets', 'logo.png'),
+    width: DEFAULT_WIDTH,
+    height: DEFAULT_HEIGHT,
+    autoHideMenuBar: true,
+  });
+
+  helpWindow.loadFile('assets/help.html');
+
+  helpWindow.on('close', () => {
+    helpWindow = undefined;
+  });
+};
+
 let config: Conf[] = [];
 
-const createWindows = () => {
+const createOverlayWindows = () => {
   for (let entry of config) {
     createOverlayWindow(entry);
   }
@@ -297,10 +324,10 @@ app.whenReady().then(() => {
     config.push({ title, url, x, y, width, height, opacity, fullscreen });
   }
 
-  createWindows();
+  createOverlayWindows();
 
   app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindows();
+    if (BrowserWindow.getAllWindows().length === 0) createOverlayWindows();
   });
 
   const makeTray = (updateAvailable = false) => {
@@ -325,6 +352,12 @@ app.whenReady().then(() => {
         label: 'Setup',
         click: () => {
           createSettingsWindow();
+        },
+      },
+      {
+        label: 'Help',
+        click: () => {
+          createHelpWindow();
         },
       },
       {

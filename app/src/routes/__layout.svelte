@@ -13,10 +13,13 @@
 {/if}
 <slot />
 
+<Bootstrap />
+
 <script lang="ts">
   import { onMount } from 'svelte';
   import Flatly from './_flatly.svelte';
   import Darkly from './_darkly.svelte';
+  import Bootstrap from './_bootstrap.svelte';
 
   let dark = false;
   onMount(() => {

@@ -1,12 +1,14 @@
 <svelte:head>
-  <title>Stream Overlay Setup</title>
+  <title>Setup - Stream Overlay</title>
 </svelte:head>
 
 <p>Stream Overlay Setup</p>
 <p>
-  <button class="btn btn-primary">A button</button>
-  <button class="btn btn-secondary">A button</button>
+  <button class="btn btn-secondary" on:click={() => electronAPI.requestHelp()}>
+    Help
+  </button>
 </p>
-<p>
-  <input class="form-control" type="text" placeholder="A text input" />
-</p>
+
+<script lang="ts">
+  import electronAPI from '$lib/electronAPI';
+</script>
