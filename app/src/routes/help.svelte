@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html />
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -39,8 +39,8 @@
 
     <p>
       You can also use this app from the command line, by providing the URL as
-      the argument. Use <code>stream-overlay --help</code> to see all the
-      available options.
+      the argument. Use <code>stream-overlay --help</code> to see all the available
+      options.
     </p>
 
     <h2>Interaction</h2>
