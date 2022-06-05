@@ -30,10 +30,10 @@ const DEFAULT_FULLSCREEN = false;
 type Conf = {
   url: string;
   title?: string;
-  width?: number;
-  height?: number;
-  x?: number;
-  y?: number;
+  width?: number | string;
+  height?: number | string;
+  x?: number | string;
+  y?: number | string;
   opacity?: number;
   fullscreen?: boolean;
 };
@@ -157,6 +157,11 @@ ipcMain.handle('requestConfigFile', (event) => {
 ipcMain.handle('requestHelp', (_event) => {
   createHelpWindow();
 });
+ipcMain.handle('requestLaunch', (_event, data) => {
+  for (let entry of data) {
+    createOverlayWindow(entry);
+  }
+});
 
 const createOverlayWindow = (conf: Conf) => {
   let {
@@ -177,17 +182,39 @@ const createOverlayWindow = (conf: Conf) => {
     app.exit(1);
   }
 
-  if (x === -1 || y === -1) {
-    const primaryDisplay = screen.getPrimaryDisplay();
-    const { width: displayWidth, height: displayHeight } =
-      primaryDisplay.workAreaSize;
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: displayWidth, height: displayHeight } =
+    primaryDisplay.workAreaSize;
 
-    if (x === -1) {
-      x = Math.max(0, Math.floor(displayWidth / 2 - width / 2));
+  const getPercent = (str: string) => {
+    if (!str.match(/^\d+(?:\.\d+)?%$/)) {
+      dialog.showErrorBox(
+        'Invalid Config',
+        "You're trying to make the window too small. Min width is 45 and min height is 30."
+      );
+      app.exit(1);
+      throw new Error();
     }
-    if (y === -1) {
-      y = Math.max(0, Math.floor(displayHeight / 2 - height / 2));
-    }
+    return parseFloat(str) / 100;
+  };
+
+  if (typeof width === 'string') {
+    width = getPercent(width) * displayWidth;
+  }
+  if (typeof height === 'string') {
+    height = getPercent(height) * displayHeight;
+  }
+  if (x === -1) {
+    x = Math.max(0, Math.floor(displayWidth / 2 - width / 2));
+  }
+  if (y === -1) {
+    y = Math.max(0, Math.floor(displayHeight / 2 - height / 2));
+  }
+  if (typeof x === 'string') {
+    x = getPercent(x) * displayWidth;
+  }
+  if (typeof y === 'string') {
+    y = getPercent(y) * displayHeight;
   }
 
   let win = new BrowserWindow({
@@ -225,6 +252,7 @@ const createOverlayWindow = (conf: Conf) => {
     const i = wins.findIndex((entry) => entry.win === win);
     if (i > -1) {
       wins.splice(i, 1);
+      makeTray();
     }
   });
 
@@ -250,6 +278,7 @@ const createOverlayWindow = (conf: Conf) => {
   // win.webContents.openDevTools();
 
   wins.push({ win, conf });
+  makeTray();
 };
 
 const createConfigEditorWindow = () => {
@@ -276,7 +305,7 @@ const createConfigEditorWindow = () => {
 
   // configEditorWindow.loadURL('http://localhost:3000');
   configEditorWindow.loadFile('/app/build/index.html');
-  // configEditorWindow.webContents.openDevTools();
+  configEditorWindow.webContents.openDevTools();
 
   configEditorWindow.on('close', () => {
     configEditorWindow = undefined;
@@ -313,6 +342,53 @@ const createHelpWindow = () => {
   });
 };
 
+const makeTray = () => {
+  if (!tray) {
+    tray = new Tray(path.resolve(__dirname, '..', 'assets', 'logo.png'));
+    tray.setToolTip("SylphWeed's Stream Overlay");
+  }
+  const contextMenu = Menu.buildFromTemplate([
+    ...wins.map(({ conf, win }, index) => ({
+      label: conf.title || 'Window ' + (index + 1),
+      click: async () => {
+        if (win) {
+          win.focus();
+        } else {
+          createOverlayWindow(conf);
+        }
+      },
+    })),
+    { type: 'separator' },
+    {
+      label: 'Config Editor',
+      click: () => {
+        createConfigEditorWindow();
+      },
+    },
+    {
+      label: 'Help',
+      click: () => {
+        createHelpWindow();
+      },
+    },
+    {
+      label: 'Homepage' + (updateAvailable ? ' (Update Available)' : ''),
+      click: async () => {
+        const { shell } = require('electron');
+        await shell.openExternal('https://github.com/hperrin/stream-overlay');
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit',
+      click: async () => {
+        app.quit();
+      },
+    },
+  ]);
+  tray.setContextMenu(contextMenu);
+};
+
 let config: Conf[] = [];
 
 const createOverlayWindows = () => {
@@ -322,6 +398,8 @@ const createOverlayWindows = () => {
 };
 
 let tray: Tray | undefined;
+let updateAvailable = false;
+
 app.on('open-file', (event, path) => {});
 app.whenReady().then(() => {
   const partition = 'persist:settings';
@@ -369,55 +447,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createOverlayWindows();
   });
 
-  const makeTray = (updateAvailable = false) => {
-    if (tray) {
-      tray.destroy();
-    }
-    tray = new Tray(path.resolve(__dirname, '..', 'assets', 'logo.png'));
-    const contextMenu = Menu.buildFromTemplate([
-      ...config.map((entry, index) => ({
-        label: entry.title || 'Window ' + (index + 1),
-        click: async () => {
-          const { win } = wins.find((check) => entry === check.conf) || {};
-          if (win) {
-            win.focus();
-          } else {
-            createOverlayWindow(entry);
-          }
-        },
-      })),
-      { type: 'separator' },
-      {
-        label: 'Config Editor',
-        click: () => {
-          createConfigEditorWindow();
-        },
-      },
-      {
-        label: 'Help',
-        click: () => {
-          createHelpWindow();
-        },
-      },
-      {
-        label: 'Homepage' + (updateAvailable ? ' (Update Available)' : ''),
-        click: async () => {
-          const { shell } = require('electron');
-          await shell.openExternal('https://github.com/hperrin/stream-overlay');
-        },
-      },
-      { type: 'separator' },
-      {
-        label: 'Quit',
-        click: async () => {
-          app.quit();
-        },
-      },
-    ]);
-    tray.setToolTip("SylphWeed's Stream Overlay");
-    tray.setContextMenu(contextMenu);
-  };
-
   makeTray();
   const req = https.request(
     {
@@ -431,7 +460,8 @@ app.whenReady().then(() => {
         res.statusCode !== 302 ||
         !res.headers.location?.endsWith('v' + pkg.version)
       ) {
-        makeTray(true);
+        updateAvailable = true;
+        makeTray();
       }
     }
   );

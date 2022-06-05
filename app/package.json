@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
+    "build": "npm run copy-css && svelte-kit build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
     "prepare": "svelte-kit sync",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
+    "clean": "test -d build && rm -r build || true",
+    "copy-css": "cp node_modules/bootswatch/dist/flatly/bootstrap.min.css static/bootstrap-flatly.min.css && cp node_modules/bootswatch/dist/darkly/bootstrap.min.css static/bootstrap-darkly.min.css",
     "lint": "prettier --check --plugin-search-dir=. .",
     "format": "prettier --write --plugin-search-dir=. ."
   },

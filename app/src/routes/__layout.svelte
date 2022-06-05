@@ -1,4 +1,12 @@
 <svelte:head>
+  <link rel="stylesheet" href="{assets}/bootstrap-flatly.min.css" />
+
+  <link
+    rel="stylesheet"
+    media="(prefers-color-scheme: dark)"
+    href="{assets}/bootstrap-darkly.min.css"
+  />
+
   <style>
     html,
     body,
@@ -13,11 +21,6 @@
   </style>
 </svelte:head>
 
-{#if dark}
-  <Darkly />
-{:else}
-  <Flatly />
-{/if}
 <div style="padding: 1em; height: 100%;">
   <slot />
 </div>
@@ -26,12 +29,18 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Flatly from './_flatly.svelte';
-  import Darkly from './_darkly.svelte';
   import Bootstrap from './_bootstrap.svelte';
-
-  let dark = false;
-  onMount(() => {
-    dark = window.matchMedia('(prefers-color-scheme: dark)');
-  });
+  import { assets } from '$app/paths';
 </script>
+
+<style>
+  :global(:root) {
+    --tab-border-color: #ecf0f1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root) {
+      --tab-border-color: #444;
+    }
+  }
+</style>

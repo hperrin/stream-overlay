@@ -4,6 +4,9 @@
   "description": "An app to show borderless, transparent, click-through browser windows for streaming.",
   "main": "dist/main.js",
   "scripts": {
+    "clean:svelte": "cd app && npm run clean",
+    "clean:electron": "test -d dist && rm -r dist || true",
+    "clean": "npm run clean:svelte && npm run clean:electron",
     "build:svelte": "cd app && npm run build",
     "build:electron": "tsc",
     "build": "npm run build:svelte && npm run build:electron",

@@ -3,22 +3,17 @@
 </svelte:head>
 
 <div class="editor-container">
-  <div style="margin: 0 0 1em; display: flex; justify-content: space-between;">
+  <div class="mb-3" style="display: flex; justify-content: space-between;">
     <div class="buttons">
-      <button class="btn btn-secondary" on:click={newConfig}> New </button>
+      <button class="btn btn-secondary" on:click={newConfig}>New</button>
       <button
         class="btn btn-secondary"
-        on:click={() => electronAPI.requestConfigFile()}
+        on:click={() => electronAPI.requestConfigFile()}>Open</button
       >
-        Open
-      </button>
     </div>
-    <button
-      class="btn btn-secondary"
-      on:click={() => electronAPI.requestHelp()}
+    <button class="btn btn-secondary" on:click={() => electronAPI.requestHelp()}
+      >Help</button
     >
-      Help
-    </button>
   </div>
 
   <ul
@@ -33,21 +28,47 @@
           aria-current="page"
           title={entry.filename}
           on:mouseup={(event) => handleTabClick(event, i, entry)}
+          >{entry.basename}</button
         >
-          {entry.basename}
-        </button>
       </li>
     {/each}
   </ul>
 
-  <div class="tab-container">
+  <div class="tab-container border-end border-bottom border-start">
     {#key activeIndex}
       {#if activeConfig}
-        <pre style="margin: 1em 0;">{JSON.stringify(
-            activeConfig,
-            null,
-            2
-          )}</pre>
+        <div style="display: flex; justify-content: space-between;">
+          <div class="buttons">
+            <button
+              class="btn btn-secondary"
+              disabled={activeConfig.filename === ''}
+              on:click={() =>
+                electronAPI.requestSave(
+                  activeConfig.config,
+                  activeConfig.filename
+                )}>Save</button
+            >
+            <button
+              class="btn btn-secondary"
+              on:click={() => electronAPI.requestSaveAs(activeConfig.config)}
+              >Save As</button
+            >
+          </div>
+          <button
+            class="btn btn-secondary"
+            on:click={() => electronAPI.requestLaunch(activeConfig.config)}
+            >Launch</button
+          >
+        </div>
+
+        <ConfigEditor bind:config={activeConfig.config} />
+      {:else}
+        <div
+          style="display: flex; justify-content: center; align-items: center; height: 100%;"
+        >
+          Start by creating a new config file or opening an existing config
+          file.
+        </div>
       {/if}
     {/key}
   </div>
@@ -56,6 +77,7 @@
 <script lang="ts">
   import type { Conf, ConfContainer } from '$lib/Conf';
   import electronAPI from '$lib/electronAPI';
+  import ConfigEditor from '$lib/ConfigEditor.svelte';
 
   let configs: ConfContainer[] = [];
   let activeIndex = 0;
@@ -117,5 +139,7 @@
     flex-basis: 0;
     flex-grow: 1;
     overflow-y: auto;
+    padding: 1em;
+    border-color: var(--tab-border-color) !important;
   }
 </style>

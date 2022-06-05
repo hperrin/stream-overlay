@@ -1,10 +1,10 @@
 export type Conf = {
   url: string;
   title?: string;
-  width?: number;
-  height?: number;
-  x?: number;
-  y?: number;
+  width?: number | string;
+  height?: number | string;
+  x?: number | string;
+  y?: number | string;
   opacity?: number;
   fullscreen?: boolean;
 };

@@ -10,4 +10,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestClose: () => ipcRenderer.invoke('requestClose'),
   requestConfigFile: () => ipcRenderer.invoke('requestConfigFile'),
   requestHelp: () => ipcRenderer.invoke('requestHelp'),
+  requestSave: (data, filename) =>
+    ipcRenderer.invoke('requestSave', data, filename),
+  requestSaveAs: (data) => ipcRenderer.invoke('requestSaveAs', data),
+  requestLaunch: (data) => ipcRenderer.invoke('requestLaunch', data),
 });
