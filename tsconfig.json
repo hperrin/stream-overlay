@@ -5,14 +5,14 @@
     "noImplicitAny": true,
     "removeComments": true,
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "app/build",
     "resolveJsonModule": true,
-    "rootDir": "src/",
+    "rootDir": "app/src/",
     "declaration": true,
     "module": "CommonJS",
     "moduleResolution": "node",
     "strict": true
   },
-  "include": ["src/**/*"],
+  "include": ["app/src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

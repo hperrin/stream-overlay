@@ -2,13 +2,13 @@
 node_modules
 
 /dist
-/stream-overlay-*
-/config.json
-/app/static/bootstrap-*.min.css
 
 /app/build
-/app/.svelte-kit
-/app/package
+/app/app/static/bootstrap-*.min.css
+
+/app/app/build
+/app/app/.svelte-kit
+/app/app/package
 .env
 .env.*
 !.env.example

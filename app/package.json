@@ -1,32 +1,19 @@
 {
-  "name": "app",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "npm run copy-css && svelte-kit build",
-    "package": "svelte-kit package",
-    "preview": "svelte-kit preview",
-    "prepare": "svelte-kit sync",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-    "clean": "test -d build && rm -r build || true",
-    "copy-css": "cp node_modules/bootswatch/dist/flatly/bootstrap.min.css static/bootstrap-flatly.min.css && cp node_modules/bootswatch/dist/darkly/bootstrap.min.css static/bootstrap-darkly.min.css",
-    "lint": "prettier --check --plugin-search-dir=. .",
-    "format": "prettier --write --plugin-search-dir=. ."
+  "name": "stream-overlay",
+  "version": "2.0.0",
+  "description": "An app to show borderless, transparent, click-through browser windows for streaming.",
+  "main": "build/main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hperrin/stream-overlay.git"
   },
-  "devDependencies": {
-    "@sveltejs/adapter-static": "^1.0.0-next.34",
-    "@sveltejs/kit": "^1.0.0-next.348",
-    "@types/bootstrap": "^5.1.12",
-    "@types/lodash": "^4.14.182",
-    "bootstrap": "^5.1.3",
-    "bootswatch": "^5.1.3",
-    "lodash": "^4.17.21",
-    "svelte": "^3.48.0",
-    "svelte-check": "^2.7.2",
-    "svelte-preprocess": "^4.10.7",
-    "tslib": "^2.4.0",
-    "typescript": "~4.7.3"
+  "author": "Hunter Perrin <hperrin@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/hperrin/stream-overlay/issues"
   },
-  "type": "module"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "commander": "^9.3.0",
+    "electron-squirrel-startup": "^1.0.0"
+  }
 }
