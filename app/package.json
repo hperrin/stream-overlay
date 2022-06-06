@@ -1,7 +1,8 @@
 {
   "name": "stream-overlay",
   "version": "2.0.0",
-  "description": "An app to show borderless, transparent, click-through browser windows for streaming.",
+  "description": "Show borderless, transparent, click-through browser windows for streaming.",
+  "icon": "assets/logo.png",
   "main": "build/main.js",
   "repository": {
     "type": "git",
@@ -12,6 +13,9 @@
     "url": "https://github.com/hperrin/stream-overlay/issues"
   },
   "license": "Apache-2.0",
+  "devDependencies": {
+    "electron": "^19.0.3"
+  },
   "dependencies": {
     "commander": "^9.3.0",
     "electron-squirrel-startup": "^1.0.0"

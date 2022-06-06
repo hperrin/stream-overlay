@@ -10,9 +10,11 @@ command: run.sh
 separate-locales: false
 finish-args:
   - --share=ipc
-  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
   - --socket=pulseaudio
   - --share=network
+  - --device=dri
   # Needed for opening, editing, saving config files.
   - --filesystem=xdg-documents
   - --filesystem=xdg-download
@@ -27,7 +29,7 @@ modules:
       env:
         XDG_CACHE_HOME: /run/build/stream-overlay/flatpak-node/cache
         npm_config_cache: /run/build/stream-overlay/flatpak-node/npm-cache
-        npm_config_nodedir: /usr/lib/sdk/node16
+        npm_config_nodedir: '/usr/lib/sdk/node16'
         npm_config_offline: 'true'
     subdir: main
     sources:
@@ -38,19 +40,33 @@ modules:
         path: ..
         dest: main
       - generated-sources.json
+      - type: file
+        path: com.hperrin.StreamOverlay.desktop
+      - type: file
+        path: com.hperrin.StreamOverlay.metainfo.xml
+      - type: file
+        path: x-stream-overlay-config.xml
+      - type: file
+        path: ../app/assets/logo.svg
+      - type: file
+        path: ../app/assets/128x128.png
       # Wrapper to launch the app
       - type: script
         dest-filename: run.sh
         commands:
           - zypak-wrapper.sh /app/main/stream-overlay "$@"
     build-commands:
+      - jq '.build.linux.target="dir"' <<<$(<package.json) > package.json
       # Install npm dependencies
       - npm install --offline
       # Build the app
-      - |
-        . ../flatpak-node/electron-builder-arch-args.sh
-        npm run package:linux -- $ELECTRON_BUILDER_ARCH_ARGS  --linux --dir
+      - npm run package:linux -- --linux --dir
       # Bundle app and dependencies
       - cp -a dist/linux*unpacked /app/main
       # Install app wrapper
       - install -Dm755 -t /app/bin/ ../run.sh
+      - install -D -m644 -t /app/share/applications ../com.hperrin.StreamOverlay.desktop
+      - install -D -m644 -t /app/share/metainfo ../com.hperrin.StreamOverlay.metainfo.xml
+      - install -D -m644 -t /app/share/mime/application/ ../x-stream-overlay-config.xml
+      - install -D -m644 -T ../128x128.png /app/share/icons/hicolor/128x128/apps/com.hperrin.StreamOverlay.png
+      - install -D -m644 -T ../logo.svg /app/share/icons/hicolor/scalable/apps/com.hperrin.StreamOverlay.svg

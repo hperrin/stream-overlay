@@ -2,6 +2,9 @@
 node_modules
 
 /dist
+/build
+/flatpak/generated-sources.json
+/.flatpak-builder
 
 /app/build
 /app/app/static/bootstrap-*.min.css
