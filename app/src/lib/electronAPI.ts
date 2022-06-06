@@ -10,19 +10,39 @@ const electronAPI =
             configFile(
               callback: (event: any, data: ConfContainer) => void
             ): void;
-            requestSave(data: Conf, filename: string): void;
-            requestSaveAs(data: Conf): void;
-            requestLaunch(data: Conf): void;
+            requestSave(data: {
+              config: Conf[];
+              filename: string;
+              uid: string;
+            }): void;
+            requestSaveAs(data: { config: Conf[]; uid: string }): void;
+            requestLaunch(data: Conf[]): void;
+            saved(
+              callback: (
+                event: any,
+                data: { filename: string; basename: string; uid: string }
+              ) => void
+            ): void;
           };
         }
       ).electronAPI
     : {
         requestConfigFile() {},
         requestHelp() {},
-        configFile(_event: any, _callback: any) {},
-        requestSave(_data: Conf, _filename: string) {},
-        requestSaveAs(_data: Conf) {},
-        requestLaunch(_data: Conf) {},
+        configFile(_callback: (event: any, data: ConfContainer) => void) {},
+        requestSave(_data: {
+          config: Conf[];
+          filename: string;
+          uid: string;
+        }) {},
+        requestSaveAs(_data: { config: Conf[]; uid: string }) {},
+        requestLaunch(_data: Conf[]) {},
+        saved(
+          _callback: (
+            event: any,
+            data: { filename: string; basename: string; uid: string }
+          ) => void
+        ) {},
       };
 
 export default electronAPI;

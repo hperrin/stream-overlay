@@ -13,4 +13,6 @@ export type ConfContainer = {
   filename: string;
   basename: string;
   config: Conf[];
+  dirty?: boolean;
+  uid?: string;
 };

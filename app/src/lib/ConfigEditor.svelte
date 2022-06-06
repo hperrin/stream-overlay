@@ -42,12 +42,18 @@
   import type { Conf } from '$lib/Conf';
   import WindowEditor from '$lib/WindowEditor.svelte';
 
+  export let dirty = false;
   export let config: Conf[];
+
+  const oldConfig = JSON.stringify(config);
+  $: if (!dirty && oldConfig !== JSON.stringify(config)) {
+    dirty = true;
+  }
 
   function addWindow() {
     config.push({
       title: 'Untitled Window',
-      url: 'https://github.com/hperrin/stream-overlay',
+      url: 'https://example.com/',
       x: -1,
       y: -1,
       width: 500,

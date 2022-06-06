@@ -45,18 +45,18 @@
   <h5>Position</h5>
 
   <h6>Horizontal (X)</h6>
-  <NumberEditor bind:value={win.x} {i} />
+  <NumberEditor bind:value={win.x} />
 
   <h6>Vertical (Y)</h6>
-  <NumberEditor bind:value={win.y} {i} />
+  <NumberEditor bind:value={win.y} />
 
   <h5>Size</h5>
 
   <h6>Width</h6>
-  <NumberEditor bind:value={win.width} {i} />
+  <NumberEditor bind:value={win.width} />
 
   <h6>Height</h6>
-  <NumberEditor bind:value={win.height} {i} />
+  <NumberEditor bind:value={win.height} />
 {/if}
 
 <script lang="ts" context="module">

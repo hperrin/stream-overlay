@@ -28,7 +28,6 @@
 <Bootstrap />
 
 <script lang="ts">
-  import { onMount } from 'svelte';
   import Bootstrap from './_bootstrap.svelte';
   import { assets } from '$app/paths';
 </script>

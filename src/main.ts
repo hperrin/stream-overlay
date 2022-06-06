@@ -131,7 +131,10 @@ ipcMain.handle('requestConfigFile', (event) => {
         title: 'Open Config File',
         properties: ['openFile'],
         filters: [
-          { name: 'Stream Overlay Config', extensions: ['soconfig', 'json'] },
+          {
+            name: 'Stream Overlay Config',
+            extensions: ['streamoverlay', 'json'],
+          },
           { name: 'All Files', extensions: ['*'] },
         ],
       })
@@ -160,6 +163,46 @@ ipcMain.handle('requestHelp', (_event) => {
 ipcMain.handle('requestLaunch', (_event, data) => {
   for (let entry of data) {
     createOverlayWindow(entry);
+  }
+});
+ipcMain.handle('requestSave', (event, { config, filename, uid }) => {
+  fs.writeFileSync(filename, JSON.stringify(config, null, 2));
+  const basename = path.basename(filename);
+  event.sender.send('saved', { filename, basename, uid });
+});
+ipcMain.handle('requestSaveAs', (event, { config, uid }) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    dialog
+      .showSaveDialog(win, {
+        title: 'Save Config File',
+        properties: ['showOverwriteConfirmation'],
+        filters: [
+          {
+            name: 'Stream Overlay Config',
+            extensions: ['streamoverlay', 'json'],
+          },
+          { name: 'All Files', extensions: ['*'] },
+        ],
+      })
+      .then((result) => {
+        if (!result.canceled) {
+          try {
+            const filename = result.filePath;
+            if (filename == null) {
+              return;
+            }
+            fs.writeFileSync(filename, JSON.stringify(config, null, 2));
+            const basename = path.basename(filename);
+            event.sender.send('saved', { filename, basename, uid });
+          } catch (e: any) {
+            dialog.showErrorBox("Can't save config file.", e.message);
+          }
+        }
+      })
+      .catch((err) => {
+        dialog.showErrorBox('Error saving file.', `${err}`);
+      });
   }
 });
 

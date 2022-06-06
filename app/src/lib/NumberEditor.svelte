@@ -42,7 +42,8 @@
       placeholder="15.0%"
       pattern="^\d+(\.\d+)?%$"
       on:change={() =>
-        (value = (isNaN(parseFloat(value)) ? '0' : parseFloat(value)) + '%')}
+        (value =
+          (isNaN(parseFloat(`${value}`)) ? '0' : parseFloat(`${value}`)) + '%')}
     />
   </div>
 {:else if valuePixel}
@@ -51,11 +52,16 @@
   </div>
 {/if}
 
+<script lang="ts" context="module">
+  let counter = 0;
+</script>
+
 <script lang="ts">
-  export let value: number | string;
-  export let i: number;
+  export let value: number | string = 0;
 
   $: valueCentered = value === -1;
   $: valuePercent = typeof value === 'string';
   $: valuePixel = typeof value === 'number' && value !== -1;
+
+  let i = counter++;
 </script>

@@ -27,8 +27,8 @@
           class:active={activeIndex === i}
           aria-current="page"
           title={entry.filename}
-          on:mouseup={(event) => handleTabClick(event, i, entry)}
-          >{entry.basename}</button
+          on:mouseup={(event) => handleTabClick(event, i)}
+          >{entry.basename}{#if entry.dirty}*{/if}</button
         >
       </li>
     {/each}
@@ -43,15 +43,19 @@
               class="btn btn-secondary"
               disabled={activeConfig.filename === ''}
               on:click={() =>
-                electronAPI.requestSave(
-                  activeConfig.config,
-                  activeConfig.filename
-                )}>Save</button
+                electronAPI.requestSave({
+                  config: activeConfig.config,
+                  filename: activeConfig.filename,
+                  uid: activeConfig.uid || '',
+                })}>Save</button
             >
             <button
               class="btn btn-secondary"
-              on:click={() => electronAPI.requestSaveAs(activeConfig.config)}
-              >Save As</button
+              on:click={() =>
+                electronAPI.requestSaveAs({
+                  config: activeConfig.config,
+                  uid: activeConfig.uid || '',
+                })}>Save As</button
             >
           </div>
           <button
@@ -61,7 +65,10 @@
           >
         </div>
 
-        <ConfigEditor bind:config={activeConfig.config} />
+        <ConfigEditor
+          bind:config={activeConfig.config}
+          bind:dirty={activeConfig.dirty}
+        />
       {:else}
         <div
           style="display: flex; justify-content: center; align-items: center; height: 100%;"
@@ -75,7 +82,8 @@
 </div>
 
 <script lang="ts">
-  import type { Conf, ConfContainer } from '$lib/Conf';
+  import uniqueId from 'lodash/uniqueId.js';
+  import type { ConfContainer } from '$lib/Conf';
   import electronAPI from '$lib/electronAPI';
   import ConfigEditor from '$lib/ConfigEditor.svelte';
 
@@ -83,32 +91,59 @@
   let activeIndex = 0;
   $: activeConfig = configs[activeIndex];
 
-  electronAPI.configFile((event, data) => {
+  electronAPI.configFile((_event, data) => {
     const idx = configs.findIndex((check) => data.filename === check.filename);
 
     if (idx > -1) {
       activeIndex = idx;
     } else {
+      data.uid = uniqueId();
+      data.dirty = false;
       configs.push(data);
       activeIndex = configs.length - 1;
       configs = configs;
     }
   });
 
+  electronAPI.saved((_event, { filename, basename, uid }) => {
+    const idx = configs.findIndex((check) => uid === check.uid);
+
+    if (idx > -1) {
+      configs[idx].filename = filename;
+      configs[idx].basename = basename;
+      configs[idx].dirty = false;
+    }
+  });
+
   function newConfig() {
     configs.push({
+      uid: uniqueId(),
+      dirty: false,
       filename: '',
       basename: 'New Config File',
-      config: [],
+      config: [
+        {
+          title: 'Chat',
+          url: 'https://streamlabs.com/widgets/chat-box/v1/YOURSECRETCODE',
+          width: 450,
+          height: 650,
+          x: 50,
+          y: -1,
+        },
+        {
+          title: 'Alerts',
+          url: 'https://streamlabs.com/alert-box/v3/YOURSECRETCODE',
+          width: 600,
+          height: 600,
+          x: -1,
+          y: 20,
+        },
+      ],
     });
     configs = configs;
   }
 
-  function handleTabClick(
-    event: MouseEvent,
-    index: number,
-    config: ConfContainer
-  ) {
+  function handleTabClick(event: MouseEvent, index: number) {
     if (event.button === 0) {
       activeIndex = index;
     } else if (event.button === 1) {

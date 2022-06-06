@@ -9,8 +9,9 @@
     "resolveJsonModule": true,
     "rootDir": "src/",
     "declaration": true,
-		"module": "CommonJS",
-		"moduleResolution": "node"
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
