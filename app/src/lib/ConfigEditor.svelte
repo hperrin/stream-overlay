@@ -1,7 +1,45 @@
 <div style="display: flex; flex-wrap: wrap; align-items: stretch;">
   {#each config as win, i}
     <div class="card" style="width: 360px; margin: 1em;">
-      <div class="card-header">{win.title}</div>
+      <div
+        class="card-header"
+        style="display: flex; justify-content: space-between; align-items: center;"
+      >
+        <span>{win.title}</span>
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="launchDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Launch
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="launchDropdown">
+            <li>
+              <button
+                class="dropdown-item"
+                on:click={() =>
+                  electronAPI.requestLaunch({
+                    config: [win],
+                    mode: 'clickable',
+                  })}>Clickable</button
+              >
+            </li>
+            <li>
+              <button
+                class="dropdown-item"
+                on:click={() =>
+                  electronAPI.requestLaunch({
+                    config: [win],
+                    mode: 'normal',
+                  })}>Click-Through</button
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
       <div
         class="card-body"
         style="display: flex; flex-direction: column; justify-content: space-between;"
@@ -39,16 +77,24 @@
 </div>
 
 <script lang="ts">
+  import { afterUpdate } from 'svelte';
   import type { Conf } from '$lib/Conf';
+  import electronAPI from '$lib/electronAPI';
   import WindowEditor from '$lib/WindowEditor.svelte';
 
   export let dirty = false;
   export let config: Conf[];
 
-  const oldConfig = JSON.stringify(config);
+  let oldConfig = JSON.stringify(config);
   $: if (!dirty && oldConfig !== JSON.stringify(config)) {
     dirty = true;
   }
+
+  afterUpdate(() => {
+    if (!dirty) {
+      oldConfig = JSON.stringify(config);
+    }
+  });
 
   function addWindow() {
     config.push({

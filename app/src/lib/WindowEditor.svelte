@@ -8,7 +8,14 @@
   />
 </div>
 <div class="mb-3">
-  <label for="url{i}" class="form-label">URL</label>
+  <label for="url{i}" class="form-label"
+    >URL{#if win.url.includes('YOURSECRETCODE')}&nbsp;<span
+        tabindex="0"
+        style="text-decoration: dotted; cursor: help;"
+        title="It looks like you haven't filled in your Widget URL. Head to streamlabs.com to get the URL for your widget."
+        >&#9888;</span
+      >{/if}</label
+  >
   <div class="input-group">
     {#if showUrl}
       <input

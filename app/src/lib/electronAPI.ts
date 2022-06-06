@@ -16,7 +16,10 @@ const electronAPI =
               uid: string;
             }): void;
             requestSaveAs(data: { config: Conf[]; uid: string }): void;
-            requestLaunch(data: Conf[]): void;
+            requestLaunch(data: {
+              config: Conf[];
+              mode: 'normal' | 'clickable';
+            }): void;
             saved(
               callback: (
                 event: any,
@@ -36,7 +39,10 @@ const electronAPI =
           uid: string;
         }) {},
         requestSaveAs(_data: { config: Conf[]; uid: string }) {},
-        requestLaunch(_data: Conf[]) {},
+        requestLaunch(_data: {
+          config: Conf[];
+          mode: 'normal' | 'clickable';
+        }) {},
         saved(
           _callback: (
             event: any,

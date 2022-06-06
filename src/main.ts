@@ -13,6 +13,7 @@ import {
   Menu,
   Tray,
 } from 'electron';
+import type { MenuItemConstructorOptions, MenuItem } from 'electron';
 
 const pkg = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString()
@@ -133,7 +134,7 @@ ipcMain.handle('requestConfigFile', (event) => {
         filters: [
           {
             name: 'Stream Overlay Config',
-            extensions: ['streamoverlay', 'json'],
+            extensions: ['streamoverlay'],
           },
           { name: 'All Files', extensions: ['*'] },
         ],
@@ -160,9 +161,9 @@ ipcMain.handle('requestConfigFile', (event) => {
 ipcMain.handle('requestHelp', (_event) => {
   createHelpWindow();
 });
-ipcMain.handle('requestLaunch', (_event, data) => {
-  for (let entry of data) {
-    createOverlayWindow(entry);
+ipcMain.handle('requestLaunch', (_event, { config, mode }) => {
+  for (let entry of config) {
+    createOverlayWindow(entry, mode === 'clickable');
   }
 });
 ipcMain.handle('requestSave', (event, { config, filename, uid }) => {
@@ -177,10 +178,11 @@ ipcMain.handle('requestSaveAs', (event, { config, uid }) => {
       .showSaveDialog(win, {
         title: 'Save Config File',
         properties: ['showOverwriteConfirmation'],
+        defaultPath: 'Untitled.streamoverlay',
         filters: [
           {
             name: 'Stream Overlay Config',
-            extensions: ['streamoverlay', 'json'],
+            extensions: ['streamoverlay'],
           },
           { name: 'All Files', extensions: ['*'] },
         ],
@@ -206,7 +208,7 @@ ipcMain.handle('requestSaveAs', (event, { config, uid }) => {
   }
 });
 
-const createOverlayWindow = (conf: Conf) => {
+const createOverlayWindow = (conf: Conf, interactable = false) => {
   let {
     x = DEFAULT_X,
     y = DEFAULT_Y,
@@ -266,7 +268,7 @@ const createOverlayWindow = (conf: Conf) => {
     },
     maximizable: false,
     resizable: false,
-    alwaysOnTop: true,
+    alwaysOnTop: !interactable,
     title,
     icon: path.join(__dirname, '..', 'assets', 'logo.png'),
     width,
@@ -311,13 +313,17 @@ const createOverlayWindow = (conf: Conf) => {
   }
 
   win.on('blur', () => {
-    win.setIgnoreMouseEvents(true);
+    if (!interactable) {
+      win.setIgnoreMouseEvents(true);
+    }
     win.setBackgroundColor('rgba(0, 0, 0, 0.0)');
     win.webContents.send('blur');
   });
 
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  win.setAlwaysOnTop(true, 'screen-saver', 1);
+  if (!interactable) {
+    win.setAlwaysOnTop(true, 'screen-saver', 1);
+  }
   // win.webContents.openDevTools();
 
   wins.push({ win, conf });
@@ -348,11 +354,14 @@ const createConfigEditorWindow = () => {
 
   // configEditorWindow.loadURL('http://localhost:3000');
   configEditorWindow.loadFile('/app/build/index.html');
-  configEditorWindow.webContents.openDevTools();
+  // configEditorWindow.webContents.openDevTools();
 
   configEditorWindow.on('close', () => {
     configEditorWindow = undefined;
+    makeTray();
   });
+
+  makeTray();
 };
 
 const createHelpWindow = () => {
@@ -401,6 +410,19 @@ const makeTray = () => {
         }
       },
     })),
+    ...(configEditorWindow && wins.length
+      ? ([
+          { type: 'separator' },
+          {
+            label: 'Close All Overlays',
+            click: () => {
+              for (let entry of wins) {
+                entry.win.close();
+              }
+            },
+          },
+        ] as (MenuItemConstructorOptions | MenuItem)[])
+      : []),
     { type: 'separator' },
     {
       label: 'Config Editor',

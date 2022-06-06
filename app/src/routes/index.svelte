@@ -58,11 +58,39 @@
                 })}>Save As</button
             >
           </div>
-          <button
-            class="btn btn-secondary"
-            on:click={() => electronAPI.requestLaunch(activeConfig.config)}
-            >Launch</button
-          >
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="launchDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Launch
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="launchDropdown">
+              <li>
+                <button
+                  class="dropdown-item"
+                  on:click={() =>
+                    electronAPI.requestLaunch({
+                      config: activeConfig.config,
+                      mode: 'clickable',
+                    })}>Clickable</button
+                >
+              </li>
+              <li>
+                <button
+                  class="dropdown-item"
+                  on:click={() =>
+                    electronAPI.requestLaunch({
+                      config: activeConfig.config,
+                      mode: 'normal',
+                    })}>Click-Through</button
+                >
+              </li>
+            </ul>
+          </div>
         </div>
 
         <ConfigEditor
@@ -70,11 +98,12 @@
           bind:dirty={activeConfig.dirty}
         />
       {:else}
-        <div
-          style="display: flex; justify-content: center; align-items: center; height: 100%;"
-        >
-          Start by creating a new config file or opening an existing config
-          file.
+        <p class="p-3" style="text-align: center;">
+          Start by creating a new config file or open an existing one.
+        </p>
+
+        <div>
+          <Help />
         </div>
       {/if}
     {/key}
@@ -86,6 +115,7 @@
   import type { ConfContainer } from '$lib/Conf';
   import electronAPI from '$lib/electronAPI';
   import ConfigEditor from '$lib/ConfigEditor.svelte';
+  import Help from './help.svelte';
 
   let configs: ConfContainer[] = [];
   let activeIndex = 0;
