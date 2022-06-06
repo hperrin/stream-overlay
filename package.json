@@ -1,6 +1,6 @@
 {
   "name": "stream-overlay",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "An app to show borderless, transparent, click-through browser windows for streaming.",
   "main": "dist/main.js",
   "scripts": {
@@ -11,11 +11,12 @@
     "build:electron": "tsc",
     "build": "npm run build:svelte && npm run build:electron",
     "watch": "tsc --watch",
-    "start": "npm run build && electron .",
+    "start": "npm run build && electron-forge start",
     "lint": "prettier --check --plugin-search-dir=. .",
     "format": "prettier --write --plugin-search-dir=. .",
-    "package:linux": "electron-packager . stream-overlay --platform=linux --arch=x64",
-    "package:windows": "electron-packager . stream-overlay --platform=win32 --arch=x64",
+    "package:linux": "npm run clean && npm run build && electron-builder build --x64 --linux",
+    "package:windows": "npm run clean && npm run build && electron-builder build --x64 --win",
+    "package:flatpak": "",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,7 +30,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
-    "electron-packager": "^15.5.1",
+    "electron": "^19.0.3",
+    "electron-builder": "^23.0.3",
     "prettier": "^2.6.2",
     "prettier-plugin-svelte": "^2.7.0",
     "tslib": "^2.4.0",
@@ -37,6 +39,21 @@
   },
   "dependencies": {
     "commander": "^9.3.0",
-    "electron": "^19.0.3"
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "build": {
+    "appId": "com.hperrin.StreamOverlay",
+    "productName": "Stream Overlay",
+    "copyright": "Copyright © 2022 Hunter Perrin",
+    "win": {},
+    "squirrelWindows": {},
+    "linux": {},
+    "fileAssociations": [
+      {
+        "ext": "streamoverlay",
+        "name": "Stream Overlay Config",
+        "mimeType": "application/x-stream-overlay-config"
+      }
+    ]
   }
 }

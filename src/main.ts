@@ -15,6 +15,12 @@ import {
 } from 'electron';
 import type { MenuItemConstructorOptions, MenuItem } from 'electron';
 
+let willQuit = false;
+if (require('electron-squirrel-startup')) {
+  willQuit = true;
+  app.quit();
+}
+
 const pkg = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString()
 );
@@ -462,11 +468,43 @@ const createOverlayWindows = () => {
   }
 };
 
+const launchConfigFile = (filename: string) => {
+  try {
+    const userConfig = JSON.parse(fs.readFileSync(filename).toString());
+    if (!Array.isArray(userConfig)) {
+      throw new Error('Config is not an array.');
+    }
+    if (userConfig.length < 1) {
+      throw new Error('Config array is empty.');
+    }
+    for (let entry of userConfig) {
+      const { url } = entry;
+      if (typeof url !== 'string') {
+        throw new Error(
+          'Config entry is not valid (url is required): ' +
+            JSON.stringify(entry)
+        );
+      }
+      config.push(entry);
+    }
+  } catch (e: any) {
+    dialog.showErrorBox('Error reading config file.', e.message);
+    app.exit(1);
+  }
+};
+
 let tray: Tray | undefined;
 let updateAvailable = false;
 
-app.on('open-file', (event, path) => {});
+app.on('open-file', (_event, path) => {
+  launchConfigFile(path);
+});
+
 app.whenReady().then(() => {
+  if (willQuit) {
+    return;
+  }
+
   const partition = 'persist:settings';
   const ses = session.fromPartition(partition);
 
@@ -477,28 +515,7 @@ app.whenReady().then(() => {
 
   if (!configured) {
     if (fs.existsSync(configFile)) {
-      try {
-        const userConfig = JSON.parse(fs.readFileSync(configFile).toString());
-        if (!Array.isArray(userConfig)) {
-          throw new Error('Config is not an array.');
-        }
-        if (userConfig.length < 1) {
-          throw new Error('Config array is empty.');
-        }
-        for (let entry of userConfig) {
-          const { url } = entry;
-          if (typeof url !== 'string') {
-            throw new Error(
-              'Config entry is not valid (url is required): ' +
-                JSON.stringify(entry)
-            );
-          }
-          config.push(entry);
-        }
-      } catch (e: any) {
-        dialog.showErrorBox('Error reading config file.', e.message);
-        app.exit(1);
-      }
+      launchConfigFile(configFile);
     } else {
       createConfigEditorWindow();
     }
