@@ -57,7 +57,8 @@
       {
         "ext": "streamoverlay",
         "name": "Stream Overlay Config",
-        "mimeType": "application/x-stream-overlay-config"
+        "mimeType": "application/x-stream-overlay-config",
+        "perMachine": true
       }
     ]
   }
