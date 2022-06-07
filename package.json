@@ -43,8 +43,7 @@
     "copyright": "Copyright © 2022 Hunter Perrin",
     "win": {
       "target": [
-        "nsis",
-        "zip"
+        "nsis"
       ],
       "icon": "app/assets/logo.ico",
       "publisherName": "Hunter Perrin"
