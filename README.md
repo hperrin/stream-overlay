@@ -10,6 +10,37 @@ I made this app because I would often not notice my chat messages on my other mo
 
 Head over to the [releases page](https://github.com/hperrin/stream-overlay/releases) to download the latest version.
 
+## Development
+
+After checking out the repo, run the following in the repo's folder.
+
+```sh
+npm install
+cd app/app
+npm install
+cd ../..
+npm start
+```
+
+Under most circumstances, it's easiest to just Ctrl+C that instance and run `npm start` again, instead of running watchers.
+
+When you've completed your changes and are ready to package it up, run the following.
+
+```sh
+npm run clean
+npm run build
+npm run package:windows # or package:linux
+```
+
+And if you want to build the flatpak and install it locally (on Linux), run the following after the above commands.
+
+```sh
+git submodule init
+git submodule update
+npm run flatpak:generate-manifest
+npm run package:flatpak
+```
+
 ## Support Me
 
 You can support me directly by supporting my software company, SciActive, on Patreon:
