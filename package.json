@@ -55,8 +55,7 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "zip"
+        "AppImage"
       ],
       "icon": "app/assets/512x512.png",
       "maintainer": "com.hperrin.StreamOverlay",
