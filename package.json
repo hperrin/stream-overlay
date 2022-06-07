@@ -41,8 +41,18 @@
     "appId": "com.hperrin.StreamOverlay",
     "productName": "Stream Overlay",
     "copyright": "Copyright © 2022 Hunter Perrin",
-    "win": {},
-    "squirrelWindows": {},
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "app/assets/logo.ico",
+      "publisherName": "Hunter Perrin"
+    },
+    "nsis": {
+      "installerIcon": "app/assets/logo.ico",
+      "perMachine": true
+    },
     "linux": {
       "target": [
         "AppImage",
@@ -57,8 +67,7 @@
       {
         "ext": "streamoverlay",
         "name": "Stream Overlay Config",
-        "mimeType": "application/x-stream-overlay-config",
-        "perMachine": true
+        "mimeType": "application/x-stream-overlay-config"
       }
     ]
   }

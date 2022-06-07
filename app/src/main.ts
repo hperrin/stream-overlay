@@ -15,12 +15,6 @@ import {
 } from 'electron';
 import type { MenuItemConstructorOptions, MenuItem } from 'electron';
 
-let willQuit = false;
-if (require('electron-squirrel-startup')) {
-  willQuit = true;
-  app.quit();
-}
-
 const pkg = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString()
 );
@@ -501,15 +495,14 @@ app.on('open-file', (_event, path) => {
 });
 
 app.whenReady().then(() => {
-  if (willQuit) {
-    return;
-  }
-
   const partition = 'persist:settings';
   const ses = session.fromPartition(partition);
 
   ses.protocol.interceptFileProtocol('file', (request, callback) => {
-    const url = request.url.substring(7);
+    let url = request.url.substring(7);
+    if (process.platform === 'win32') {
+      url = url.replace(/^\/\w+:/, () => '');
+    }
     callback({ path: path.normalize(`${__dirname}/../${url}`) });
   });
 
