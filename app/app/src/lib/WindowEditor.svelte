@@ -52,10 +52,10 @@
   <h5>Position</h5>
 
   <h6>Horizontal (X)</h6>
-  <NumberEditor bind:value={win.x} />
+  <NumberEditor bind:value={win.x} allowCentered />
 
   <h6>Vertical (Y)</h6>
-  <NumberEditor bind:value={win.y} />
+  <NumberEditor bind:value={win.y} allowCentered />
 
   <h5>Size</h5>
 

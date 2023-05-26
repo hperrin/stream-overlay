@@ -219,41 +219,37 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     fullscreen = DEFAULT_FULLSCREEN,
   } = conf;
 
-  if (
-    !fullscreen &&
-    typeof width === 'number' &&
-    typeof height === 'number' &&
-    (width < 45 || height < 30)
-  ) {
-    dialog.showErrorBox(
-      'Invalid Config',
-      "You're trying to make the window too small. Min width is 45 and min height is 30."
-    );
-    app.exit(1);
-  }
-
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: displayWidth, height: displayHeight } =
     primaryDisplay.workAreaSize;
 
   const getPercent = (str: string) => {
     if (!str.match(/^\d+(?:\.\d+)?%$/)) {
-      dialog.showErrorBox(
-        'Invalid Config',
-        "You're trying to make the window too small. Min width is 45 and min height is 30."
-      );
-      app.exit(1);
-      throw new Error();
+      throw new Error('Invalid string.');
     }
     return parseFloat(str) / 100;
   };
 
-  if (typeof width === 'string') {
-    width = getPercent(width) * displayWidth;
+  try {
+    if (typeof width === 'string') {
+      width = getPercent(width) * displayWidth;
+    }
+    if (typeof height === 'string') {
+      height = getPercent(height) * displayHeight;
+    }
+  } catch (e: any) {
+    dialog.showErrorBox('Invalid Config', e.message);
+    return;
   }
-  if (typeof height === 'string') {
-    height = getPercent(height) * displayHeight;
+
+  if (!fullscreen && (width < 45 || height < 30)) {
+    dialog.showErrorBox(
+      'Invalid Config',
+      "You're trying to make the window too small. Min width is 45 and min height is 30."
+    );
+    return;
   }
+
   if (x === -1) {
     x = Math.max(0, Math.floor(displayWidth / 2 - width / 2));
   }

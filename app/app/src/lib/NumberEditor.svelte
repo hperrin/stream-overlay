@@ -1,14 +1,16 @@
-<div class="mb-3 form-check form-check-inline">
-  <input
-    type="radio"
-    role="switch"
-    class="form-check-input"
-    id="valueCentered{i}"
-    checked={valueCentered}
-    on:click={() => (value = -1)}
-  />
-  <label for="valueCentered{i}" class="form-check-label">Centered</label>
-</div>
+{#if allowCentered}
+  <div class="mb-3 form-check form-check-inline">
+    <input
+      type="radio"
+      role="switch"
+      class="form-check-input"
+      id="valueCentered{i}"
+      checked={valueCentered}
+      on:click={() => (value = -1)}
+    />
+    <label for="valueCentered{i}" class="form-check-label">Centered</label>
+  </div>
+{/if}
 <div class="mb-3 form-check form-check-inline">
   <input
     type="radio"
@@ -58,6 +60,7 @@
 
 <script lang="ts">
   export let value: number | string = 0;
+  export let allowCentered = false;
 
   $: valueCentered = value === -1;
   $: valuePercent = typeof value === 'string';
