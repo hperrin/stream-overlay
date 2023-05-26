@@ -115,7 +115,7 @@
   import type { ConfContainer } from '$lib/Conf';
   import electronAPI from '$lib/electronAPI';
   import ConfigEditor from '$lib/ConfigEditor.svelte';
-  import Help from './_help.svelte';
+  import Help from './help/+page.svelte';
 
   let configs: ConfContainer[] = [];
   let activeIndex = 0;
