@@ -1,6 +1,6 @@
 {
   "name": "stream-overlay",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Show borderless, transparent, click-through browser windows for streaming.",
   "icon": "assets/logo.png",
   "main": "build/main.js",
@@ -14,9 +14,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "electron": "^19.0.3"
+    "electron": "^24.4.0"
   },
   "dependencies": {
-    "commander": "^9.3.0"
+    "commander": "^10.0.1"
   }
 }

@@ -9,6 +9,10 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
+    /**
+      Specific to Stream Overlay.
+      */
+    "allowSyntheticDefaultImports": true,
     "noImplicitAny": true
   }
 }

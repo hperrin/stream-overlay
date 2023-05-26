@@ -219,7 +219,12 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     fullscreen = DEFAULT_FULLSCREEN,
   } = conf;
 
-  if (!fullscreen && (width < 45 || height < 30)) {
+  if (
+    !fullscreen &&
+    typeof width === 'number' &&
+    typeof height === 'number' &&
+    (width < 45 || height < 30)
+  ) {
     dialog.showErrorBox(
       'Invalid Config',
       "You're trying to make the window too small. Min width is 45 and min height is 30."
