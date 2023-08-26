@@ -1,6 +1,8 @@
 # SylphWeed's Stream Overlay
 
-This app shows borderless, transparent, click-through browser windows for streaming. For example, you can show your Twitch chat and alerts on your display, over your game.
+Borderless, transparent, click-through browser windows for streaming.
+
+For example, you can show your Twitch chat and alerts on your display, over your game.
 
 I made this app because I would often not notice my chat messages on my other monitor, and I'd prefer to have them come up on the display I'm looking at, rather than only in an OBS overlay. It's also great for single monitor streamers.
 
@@ -9,6 +11,16 @@ I made this app because I would often not notice my chat messages on my other mo
 ## Download
 
 Head over to the [releases page](https://github.com/hperrin/stream-overlay/releases) to download the latest version.
+
+## Notes
+
+### Windows
+
+You can check for updates through the system tray menu.
+
+### Linux
+
+You need to be using X, not Wayland. Everything works in Wayland except click-through windows.
 
 ## Development
 
