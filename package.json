@@ -14,9 +14,10 @@
     "format": "prettier --write --plugin-search-dir=. .",
     "package:linux": "electron-builder build --x64 --linux",
     "package:windows": "electron-builder build --x64 --win",
-    "package:flatpak": "flatpak-builder build flatpak/com.hperrin.StreamOverlay.yml --install --force-clean --user",
+    "package:flatpak": "npm run flatpak:install-dependencies && npm run flatpak:generate-manifest && npm run flatpak:build",
     "flatpak:install-dependencies": "flatpak install flathub org.electronjs.Electron2.BaseApp//22.08 && flatpak install flathub org.freedesktop.Sdk.Extension.node18//22.08",
-    "flatpak:generate-manifest": "flatpak-node-generator npm -r -o flatpak/generated-sources.json app/package-lock.json",
+    "flatpak:generate-manifest": "flatpak-node-generator npm -r -o generated-sources.json app/package-lock.json",
+    "flatpak:build": "flatpak-builder build com.hperrin.StreamOverlay.yaml --install --force-clean --user",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "electron-builder install-app-deps"
   },

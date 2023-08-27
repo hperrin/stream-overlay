@@ -3,7 +3,7 @@ node_modules
 
 /dist
 /build
-/flatpak/generated-sources.json
+/generated-sources.json
 /.flatpak-builder
 
 /app/build

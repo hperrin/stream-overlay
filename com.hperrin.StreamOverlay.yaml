@@ -32,13 +32,18 @@ modules:
         npm_config_offline: 'true'
     build-commands:
       - jq '.build.linux.target="dir"' <<<$(<package.json) > package.json
+      # Install SvelteKit app dependencies
+      - cd app/app && npm install --offline
+      # Build SvelteKit app
+      - npm run build:svelte
+      # Install Electron app dependencies
+      - cd app && npm install --offline
+      # Build Electron app
+      - npm run build:electron
       # Install npm dependencies
       - npm install --offline
       # Build the app
-      - |
-        npm run flatpak:install-dependencies
-        npm run flatpak:generate-manifest
-        npm run package:linux -- $ELECTRON_BUILDER_ARCH_ARGS --linux --dir
+      - npm run package:linux -- $ELECTRON_BUILDER_ARCH_ARGS --linux --dir
       # Bundle app and dependencies
       - cp -a dist/linux*unpacked /app/main
       # Install app wrapper
@@ -54,7 +59,7 @@ modules:
       #  url: https://github.com/hperrin/stream-overlay/archive/2.0.0.tar.gz
       #  sha256: abc123...
       - type: dir
-        path: ..
+        path: .
         dest: main
       - generated-sources.json
       - type: file
@@ -64,9 +69,9 @@ modules:
       - type: file
         path: x-stream-overlay-config.xml
       - type: file
-        path: ../app/assets/logo.svg
+        path: ./app/assets/logo.svg
       - type: file
-        path: ../app/assets/128x128.png
+        path: ./app/assets/128x128.png
       # Wrapper to launch the app
       - type: script
         dest-filename: run.sh
