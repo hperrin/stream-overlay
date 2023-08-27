@@ -15,7 +15,8 @@
     "package:linux": "electron-builder build --x64 --linux",
     "package:windows": "electron-builder build --x64 --win",
     "package:flatpak": "flatpak-builder build flatpak/com.hperrin.StreamOverlay.yml --install --force-clean --user",
-    "flatpak:generate-manifest": "python3 flatpak-builder-tools/node/flatpak-node-generator.py npm -r -o flatpak/generated-sources.json --xdg-layout app/package-lock.json",
+    "flatpak:install-dependencies": "flatpak install flathub org.electronjs.Electron2.BaseApp//22.08 && flatpak install flathub org.freedesktop.Sdk.Extension.node18//22.08",
+    "flatpak:generate-manifest": "flatpak-node-generator npm -r -o flatpak/generated-sources.json app/package-lock.json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "electron-builder install-app-deps"
   },

@@ -1,11 +1,11 @@
 app-id: com.hperrin.StreamOverlay
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
+runtime-version: '22.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
-base-version: '21.08'
+base-version: '22.08'
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.node16
+  - org.freedesktop.Sdk.Extension.node18
 command: run.sh
 separate-locales: false
 finish-args:
@@ -19,7 +19,7 @@ finish-args:
   - --filesystem=xdg-documents
   - --filesystem=xdg-download
 build-options:
-  append-path: /usr/lib/sdk/node16/bin
+  append-path: /usr/lib/sdk/node18/bin
   env:
     NPM_CONFIG_LOGLEVEL: info
 modules:
@@ -29,8 +29,24 @@ modules:
       env:
         XDG_CACHE_HOME: /run/build/stream-overlay/flatpak-node/cache
         npm_config_cache: /run/build/stream-overlay/flatpak-node/npm-cache
-        npm_config_nodedir: '/usr/lib/sdk/node16'
         npm_config_offline: 'true'
+    build-commands:
+      - jq '.build.linux.target="dir"' <<<$(<package.json) > package.json
+      # Install npm dependencies
+      - npm install --offline
+      # Build the app
+      - |
+        python3 ../flatpak-builder-tools/node/flatpak-node-generator.py npm --xdg-layout package-lock.json
+        npm run package:linux -- $ELECTRON_BUILDER_ARCH_ARGS --linux --dir
+      # Bundle app and dependencies
+      - cp -a dist/linux*unpacked /app/main
+      # Install app wrapper
+      - install -Dm755 -t /app/bin/ ../run.sh
+      - install -D -m644 -t /app/share/applications ../com.hperrin.StreamOverlay.desktop
+      - install -D -m644 -t /app/share/metainfo ../com.hperrin.StreamOverlay.metainfo.xml
+      - install -D -m644 -t /app/share/mime/application/ ../x-stream-overlay-config.xml
+      - install -D -m644 -T ../128x128.png /app/share/icons/hicolor/128x128/apps/com.hperrin.StreamOverlay.png
+      - install -D -m644 -T ../logo.svg /app/share/icons/hicolor/scalable/apps/com.hperrin.StreamOverlay.svg
     subdir: main
     sources:
       #- type: archive
@@ -55,18 +71,3 @@ modules:
         dest-filename: run.sh
         commands:
           - zypak-wrapper.sh /app/main/stream-overlay "$@"
-    build-commands:
-      - jq '.build.linux.target="dir"' <<<$(<package.json) > package.json
-      # Install npm dependencies
-      - npm install --offline
-      # Build the app
-      - npm run package:linux -- --linux --dir
-      # Bundle app and dependencies
-      - cp -a dist/linux*unpacked /app/main
-      # Install app wrapper
-      - install -Dm755 -t /app/bin/ ../run.sh
-      - install -D -m644 -t /app/share/applications ../com.hperrin.StreamOverlay.desktop
-      - install -D -m644 -t /app/share/metainfo ../com.hperrin.StreamOverlay.metainfo.xml
-      - install -D -m644 -t /app/share/mime/application/ ../x-stream-overlay-config.xml
-      - install -D -m644 -T ../128x128.png /app/share/icons/hicolor/128x128/apps/com.hperrin.StreamOverlay.png
-      - install -D -m644 -T ../logo.svg /app/share/icons/hicolor/scalable/apps/com.hperrin.StreamOverlay.svg
