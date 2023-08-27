@@ -57,8 +57,6 @@ pipx install .
 To build the flatpak and install it locally (on Linux), run the following after the above commands.
 
 ```sh
-npm run flatpak:install-dependencies
-npm run flatpak:generate-manifest
 npm run package:flatpak
 ```
 

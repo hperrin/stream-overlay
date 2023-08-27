@@ -11,33 +11,42 @@
     <category>Utility</category>
   </categories>
 
-  <summary>Show borderless, transparent, click-through browser windows for streaming. For example, you can show your Twitch chat and alerts on your display, over your game.</summary>
+  <summary>Show borderless, transparent, click-through browser windows for streaming. For example,
+    you can show your Twitch chat and alerts on your display, over your game.</summary>
 
   <description>
-    <p>This app shows borderless, transparent, click-through browser windows for streaming. For example, you can show your Twitch chat and alerts on your display, over your game.</p>
-    <p>I made this app because I would often not notice my chat messages on my other monitor, and I'd prefer to have them come up on the display I'm looking at, rather than only in an OBS overlay. It's also great for single monitor streamers.</p>
+    <p>This app shows borderless, transparent, click-through browser windows for streaming. For
+      example, you can show your Twitch chat and alerts on your display, over your game.</p>
+    <p>I made this app because I would often not notice my chat messages on my other monitor, and
+      I'd prefer to have them come up on the display I'm looking at, rather than only in an OBS
+      overlay. It's also great for single monitor streamers.</p>
   </description>
 
   <developer_name>Hunter Perrin</developer_name>
 
   <releases>
-    <release version="2.0.0" date="2022-06-06">
+    <release version="4.0.0" date="2023-08-26">
       <description>
-        <p>Too many new features and improvements to list here.</p>
+        <p>
+          Fix number calculation and showing center option on width and height.
+          Update packages.
+        </p>
       </description>
     </release>
   </releases>
 
   <screenshots>
     <screenshot type="default">
-      <image type="source">https://raw.githubusercontent.com/hperrin/stream-overlay/v1.1.0/assets/logo.png</image>
+      <image type="source">
+        https://raw.githubusercontent.com/hperrin/stream-overlay/master/flatpak/screenshot.png</image>
     </screenshot>
   </screenshots>
 
   <content_rating type="oars-1.1" />
 
   <metadata>
-    <value key="GnomeSoftware::popular-background">https://raw.githubusercontent.com/hperrin/stream-overlay/v1.1.0/assets/logo.png</value>
+    <value key="GnomeSoftware::popular-background">
+      https://raw.githubusercontent.com/hperrin/stream-overlay/master/flatpak/screenshot.png</value>
   </metadata>
 
   <url type="homepage">https://github.com/hperrin/stream-overlay</url>
