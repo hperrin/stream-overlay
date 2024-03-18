@@ -9,7 +9,7 @@
     "build:electron": "cd app && tsc",
     "build": "npm run build:svelte && npm run build:electron",
     "watch": "cd app && tsc --watch",
-    "start": "npm run build && electron app",
+    "start": "electron app",
     "lint": "prettier --check --plugin-search-dir=. .",
     "format": "prettier --write --plugin-search-dir=. .",
     "package:linux": "electron-builder build --x64 --linux",
