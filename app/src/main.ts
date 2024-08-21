@@ -27,6 +27,7 @@ const DEFAULT_X = -1;
 const DEFAULT_Y = -1;
 const DEFAULT_OPACITY = 1;
 const DEFAULT_FULLSCREEN = false;
+const NOT_EMBEDDABLE_PROVIDERS_URL_PREFIXES = ['https://dashboard.twitch.tv', 'https://www.twitch.tv'];
 
 type Conf = {
   url: string;
@@ -286,7 +287,11 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
 
   const timer = setInterval(() => win.moveTop(), 1000);
 
-  win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
+  if (NOT_EMBEDDABLE_PROVIDERS_URL_PREFIXES.some(providerPrefix => conf.url.startsWith(providerPrefix))) {
+    win.loadURL(conf.url);
+  } else {
+    win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
+  }
 
   // Emitted when the window is closed.
   win.on('closed', () => {
