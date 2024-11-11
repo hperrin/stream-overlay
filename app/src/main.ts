@@ -27,7 +27,7 @@ const DEFAULT_X = -1;
 const DEFAULT_Y = -1;
 const DEFAULT_OPACITY = 1;
 const DEFAULT_FULLSCREEN = false;
-const NOT_EMBEDDABLE_PROVIDERS_URL_PREFIXES = ['https://dashboard.twitch.tv', 'https://www.twitch.tv'];
+const DEFAULT_NATIVE_DISPLAY = false;
 
 type Conf = {
   url: string;
@@ -38,6 +38,7 @@ type Conf = {
   y?: number | string;
   opacity?: number;
   fullscreen?: boolean;
+  nativeDisplay?: boolean;
 };
 
 program
@@ -86,6 +87,12 @@ program
       'Make the window full screen (width, height, x, and y are ignored)'
     ).default(DEFAULT_FULLSCREEN)
   )
+  .addOption(
+    new Option(
+      '-n, --nativeDisplay',
+      'Open web page in a native window'
+    ).default(DEFAULT_NATIVE_DISPLAY)
+  )
   .argument(
     '[configfile]',
     'The path to a config file',
@@ -99,7 +106,7 @@ const configFile = program.args.length
   ? path.resolve(program.args[0])
   : path.resolve(__dirname, '..', 'config.json');
 const options = program.opts();
-const { url, x, y, width, height, title, opacity, fullscreen } = options;
+const { url, x, y, width, height, title, opacity, fullscreen, nativeDisplay } = options;
 
 const wins: {
   conf: Conf;
@@ -218,6 +225,7 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     title = DEFAULT_TITLE,
     opacity = DEFAULT_OPACITY,
     fullscreen = DEFAULT_FULLSCREEN,
+    nativeDisplay = DEFAULT_NATIVE_DISPLAY,
   } = conf;
 
   const primaryDisplay = screen.getPrimaryDisplay();
@@ -287,10 +295,10 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
 
   const timer = setInterval(() => win.moveTop(), 1000);
 
-  if (NOT_EMBEDDABLE_PROVIDERS_URL_PREFIXES.some(providerPrefix => conf.url.startsWith(providerPrefix))) {
-    win.loadURL(conf.url);
-  } else {
+  if (!nativeDisplay) {
     win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
+  } else {
+    win.loadURL(conf.url);
   }
 
   // Emitted when the window is closed.
@@ -519,7 +527,7 @@ app.whenReady().then(() => {
       createConfigEditorWindow();
     }
   } else {
-    config.push({ title, url, x, y, width, height, opacity, fullscreen });
+    config.push({ title, url, x, y, width, height, opacity, fullscreen, nativeDisplay });
   }
 
   createOverlayWindows();
