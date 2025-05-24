@@ -51,6 +51,17 @@
   then back to borderless.
 </p>
 
+<h2>Display as native window</h2>
+
+<p>
+  By default, an overlay window is created as a new HTML page with a
+  customizable title and an embeddable window (iframe) with a web resource. Some
+  web resources cannot be created as embeddable pages due to limitations set by
+  web resource providers (e. g. Twitch Alerts). For such resources, the only way
+  to display them is in a native window. This window will not have a draggable
+  title bar or a close button, so it will be a bit harder to work with.
+</p>
+
 <h2>Support Me</h2>
 
 <p>
