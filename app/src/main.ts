@@ -29,6 +29,7 @@ const DEFAULT_X = -1;
 const DEFAULT_Y = -1;
 const DEFAULT_OPACITY = 1;
 const DEFAULT_FULLSCREEN = false;
+const DEFAULT_SCALE = 1;
 
 type Conf = {
   url: string;
@@ -39,6 +40,7 @@ type Conf = {
   y?: number | string;
   opacity?: number;
   fullscreen?: boolean;
+  scale?: number;
 };
 
 program
@@ -54,14 +56,10 @@ program
   )
   .option('-t, --title <title>', 'Window title', DEFAULT_TITLE)
   .addOption(
-    new Option('-w, --width <width>', 'Window width')
-      .default(DEFAULT_WIDTH)
-      .argParser(parseFloat),
-  )
-  .addOption(
-    new Option('-h, --height <height>', 'Window height')
-      .default(DEFAULT_HEIGHT)
-      .argParser(parseFloat),
+    new Option(
+      '-f, --fullscreen',
+      'Make the window full screen (x, y, width, and height are ignored)',
+    ).default(DEFAULT_FULLSCREEN),
   )
   .addOption(
     new Option('-x <x_coord>', 'Window X position (-1 for centered)')
@@ -74,18 +72,27 @@ program
       .argParser(parseFloat),
   )
   .addOption(
+    new Option('-w, --width <width>', 'Window width')
+      .default(DEFAULT_WIDTH)
+      .argParser(parseFloat),
+  )
+  .addOption(
+    new Option('-h, --height <height>', 'Window height')
+      .default(DEFAULT_HEIGHT)
+      .argParser(parseFloat),
+  )
+  .addOption(
+    new Option('-s, --scale <scale>', 'Scale factor (1 = 100%)')
+      .default(DEFAULT_SCALE)
+      .argParser(parseFloat),
+  )
+  .addOption(
     new Option(
       '-o, --opacity <opacity>',
       "Window opacity (0 transparent to 1 opaque) (doesn't work on Linux)",
     )
       .default(DEFAULT_OPACITY)
       .argParser(parseFloat),
-  )
-  .addOption(
-    new Option(
-      '-f, --fullscreen',
-      'Make the window full screen (width, height, x, and y are ignored)',
-    ).default(DEFAULT_FULLSCREEN),
   )
   .argument(
     '[configfile]',
@@ -226,6 +233,7 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     title = DEFAULT_TITLE,
     opacity = DEFAULT_OPACITY,
     fullscreen = DEFAULT_FULLSCREEN,
+    scale = DEFAULT_SCALE,
   } = conf;
 
   const primaryDisplay = screen.getPrimaryDisplay();
@@ -310,9 +318,14 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
       backgroundThrottling: false,
       safeDialogs: true,
       disableHtmlFullscreenWindowResize: true,
+      zoomFactor: scale,
     },
   });
   win.contentView.addChildView(webView);
+  webView.webContents.on('did-finish-load', () => {
+    // Required for changes of zoomFactor. See https://stackoverflow.com/a/44196987
+    webView.webContents.setZoomFactor(scale);
+  });
   webView.webContents.loadURL(conf.url);
   webView.setBackgroundColor('rgba(0, 0, 0, 0.0)');
   webView.setBounds({ x: 0, y: 0, width, height });

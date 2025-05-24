@@ -66,6 +66,11 @@
   <NumberEditor bind:value={win.height} />
 {/if}
 
+<h5>Scale</h5>
+<div class="mb-3">
+  <input type="number" class="form-control" id="scale{i}" min={0.3} max={5} step={0.1} bind:value={win.scale} />
+</div>
+
 <script lang="ts" module>
   let counter = 0;
 </script>

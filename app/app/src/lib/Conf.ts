@@ -7,6 +7,7 @@ export type Conf = {
   y?: number | string;
   opacity?: number;
   fullscreen?: boolean;
+  scale?: number;
 };
 
 export type ConfContainer = {

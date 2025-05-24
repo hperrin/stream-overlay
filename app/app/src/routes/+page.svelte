@@ -135,6 +135,14 @@
     } else {
       data.uid = uniqueId();
       data.origConfig = JSON.stringify(data.config);
+      data.config.forEach((window) => {
+        if (!('fullscreen' in window)) {
+          window.fullscreen = false;
+        }
+        if (!('scale' in window)) {
+          window.scale = 1;
+        }
+      });
       configs.push(data);
       activeIndex = configs.length - 1;
     }
@@ -159,18 +167,22 @@
         {
           title: 'Chat',
           url: 'https://streamlabs.com/widgets/chat-box/v1/YOURSECRETCODE',
-          width: 450,
-          height: 650,
+          fullscreen: false,
           x: 50,
           y: -1,
+          width: 450,
+          height: 650,
+          scale: 0.8,
         },
         {
           title: 'Alerts',
           url: 'https://streamlabs.com/alert-box/v3/YOURSECRETCODE',
-          width: 600,
-          height: 600,
+          fullscreen: false,
           x: -1,
           y: 20,
+          width: 600,
+          height: 600,
+          scale: 1,
         },
       ],
     });
