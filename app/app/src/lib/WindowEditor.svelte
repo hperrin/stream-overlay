@@ -47,11 +47,12 @@
   />
   <label for="nativeDisplay{i}" class="form-check-label"
     >Display as native window{#if win.url.includes('twitch.tv/') && !win.nativeDisplay}&nbsp;<span
-    tabindex="0"
-    style="text-decoration: dotted; cursor: help;"
-    title="It is recommended to display widgets from Twitch as a native window due to iframe limitations."
-    >&#9888;</span
-  >{/if}</label>
+        tabindex="0"
+        style="text-decoration: dotted; cursor: help;"
+        title="It is recommended to display widgets from Twitch as a native window due to iframe limitations."
+        >&#9888;</span
+      >{/if}</label
+  >
 </div>
 <div class="mb-3 form-check form-switch">
   <input

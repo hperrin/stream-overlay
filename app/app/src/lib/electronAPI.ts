@@ -8,7 +8,7 @@ const electronAPI =
             requestConfigFile(): void;
             requestHelp(): void;
             configFile(
-              callback: (event: any, data: ConfContainer) => void
+              callback: (event: any, data: ConfContainer) => void,
             ): void;
             requestSave(data: {
               config: Conf[];
@@ -23,8 +23,8 @@ const electronAPI =
             saved(
               callback: (
                 event: any,
-                data: { filename: string; basename: string; uid: string }
-              ) => void
+                data: { filename: string; basename: string; uid: string },
+              ) => void,
             ): void;
           };
         }
@@ -46,8 +46,8 @@ const electronAPI =
         saved(
           _callback: (
             event: any,
-            data: { filename: string; basename: string; uid: string }
-          ) => void
+            data: { filename: string; basename: string; uid: string },
+          ) => void,
         ) {},
       };
 

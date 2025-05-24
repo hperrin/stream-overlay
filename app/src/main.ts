@@ -16,7 +16,7 @@ import {
 import type { MenuItemConstructorOptions, MenuItem } from 'electron';
 
 const pkg = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString()
+  fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString(),
 );
 
 const DEV = process.env.NODE_ENV !== 'production';
@@ -50,53 +50,53 @@ program
   .option(
     '-u, --url <url>',
     'The URL of the page to open. This takes precedence over the passed config file',
-    './help.html'
+    './help.html',
   )
   .option('-t, --title <title>', 'Window title', DEFAULT_TITLE)
   .addOption(
     new Option('-w, --width <width>', 'Window width')
       .default(DEFAULT_WIDTH)
-      .argParser(parseFloat)
+      .argParser(parseFloat),
   )
   .addOption(
     new Option('-h, --height <height>', 'Window height')
       .default(DEFAULT_HEIGHT)
-      .argParser(parseFloat)
+      .argParser(parseFloat),
   )
   .addOption(
     new Option('-x <x_coord>', 'Window X position (-1 for centered)')
       .default(DEFAULT_X, 'centered horizontally')
-      .argParser(parseFloat)
+      .argParser(parseFloat),
   )
   .addOption(
     new Option('-y <y_coord>', 'Window Y position (-1 for centered)')
       .default(DEFAULT_Y, 'centered vertically')
-      .argParser(parseFloat)
+      .argParser(parseFloat),
   )
   .addOption(
     new Option(
       '-o, --opacity <opacity>',
-      "Window opacity (0 transparent to 1 opaque) (doesn't work on Linux)"
+      "Window opacity (0 transparent to 1 opaque) (doesn't work on Linux)",
     )
       .default(DEFAULT_OPACITY)
-      .argParser(parseFloat)
+      .argParser(parseFloat),
   )
   .addOption(
     new Option(
       '-f, --fullscreen',
-      'Make the window full screen (width, height, x, and y are ignored)'
-    ).default(DEFAULT_FULLSCREEN)
+      'Make the window full screen (width, height, x, and y are ignored)',
+    ).default(DEFAULT_FULLSCREEN),
   )
   .addOption(
     new Option(
       '-n, --nativeDisplay',
-      'Open web page in a native window'
-    ).default(DEFAULT_NATIVE_DISPLAY)
+      'Open web page in a native window',
+    ).default(DEFAULT_NATIVE_DISPLAY),
   )
   .argument(
     '[configfile]',
     'The path to a config file',
-    path.resolve(__dirname, '..', 'config.json')
+    path.resolve(__dirname, '..', 'config.json'),
   );
 
 let configured = false;
@@ -106,17 +106,8 @@ const configFile = program.args.length
   ? path.resolve(program.args[0])
   : path.resolve(__dirname, '..', 'config.json');
 const options = program.opts();
-const {
-  url,
-  x,
-  y,
-  width,
-  height,
-  title,
-  opacity,
-  fullscreen,
-  nativeDisplay
-} = options;
+const { url, x, y, width, height, title, opacity, fullscreen, nativeDisplay } =
+  options;
 
 const wins: {
   conf: Conf;
@@ -264,7 +255,7 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
   if (!fullscreen && (width < 45 || height < 30)) {
     dialog.showErrorBox(
       'Invalid Config',
-      "You're trying to make the window too small. Min width is 45 and min height is 30."
+      "You're trying to make the window too small. Min width is 45 and min height is 30.",
     );
     return;
   }
@@ -500,7 +491,7 @@ const launchConfigFile = (filename: string) => {
       if (typeof url !== 'string') {
         throw new Error(
           'Config entry is not valid (url is required): ' +
-            JSON.stringify(entry)
+            JSON.stringify(entry),
         );
       }
       config.push(entry);
@@ -546,7 +537,7 @@ app.whenReady().then(() => {
       height,
       opacity,
       fullscreen,
-      nativeDisplay
+      nativeDisplay,
     });
   }
 
@@ -572,7 +563,7 @@ app.whenReady().then(() => {
         updateAvailable = true;
         makeTray();
       }
-    }
+    },
   );
 
   req.on('error', (e) => {
