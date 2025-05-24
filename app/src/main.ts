@@ -106,7 +106,17 @@ const configFile = program.args.length
   ? path.resolve(program.args[0])
   : path.resolve(__dirname, '..', 'config.json');
 const options = program.opts();
-const { url, x, y, width, height, title, opacity, fullscreen, nativeDisplay } = options;
+const {
+  url,
+  x,
+  y,
+  width,
+  height,
+  title,
+  opacity,
+  fullscreen,
+  nativeDisplay
+} = options;
 
 const wins: {
   conf: Conf;
@@ -295,10 +305,10 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
 
   const timer = setInterval(() => win.moveTop(), 1000);
 
-  if (!nativeDisplay) {
-    win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
-  } else {
+  if (nativeDisplay) {
     win.loadURL(conf.url);
+  } else {
+    win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
   }
 
   // Emitted when the window is closed.
@@ -527,7 +537,17 @@ app.whenReady().then(() => {
       createConfigEditorWindow();
     }
   } else {
-    config.push({ title, url, x, y, width, height, opacity, fullscreen, nativeDisplay });
+    config.push({
+      title,
+      url,
+      x,
+      y,
+      width,
+      height,
+      opacity,
+      fullscreen,
+      nativeDisplay
+    });
   }
 
   createOverlayWindows();
