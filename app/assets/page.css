@@ -9,6 +9,7 @@ body {
 }
 
 .drag-handle {
+  display: flex;
   width: 100%;
   height: 30px;
   justify-content: space-between;
@@ -19,10 +20,6 @@ body {
   user-select: none;
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  display: none;
-}
-body.focused .drag-handle {
-  display: flex;
 }
 .drag-handle .bar {
   flex-grow: 1;
@@ -49,13 +46,4 @@ body.focused .drag-handle {
   color: #fff;
   -webkit-app-region: no-drag;
   cursor: pointer;
-}
-
-#frame {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-body.focused #frame {
-  height: calc(100% - 30px);
 }

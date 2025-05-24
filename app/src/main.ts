@@ -12,6 +12,8 @@ import {
   BrowserWindow,
   Menu,
   Tray,
+  BaseWindow,
+  WebContentsView,
 } from 'electron';
 import type { MenuItemConstructorOptions, MenuItem } from 'electron';
 
@@ -27,7 +29,6 @@ const DEFAULT_X = -1;
 const DEFAULT_Y = -1;
 const DEFAULT_OPACITY = 1;
 const DEFAULT_FULLSCREEN = false;
-const DEFAULT_NATIVE_DISPLAY = false;
 
 type Conf = {
   url: string;
@@ -38,7 +39,6 @@ type Conf = {
   y?: number | string;
   opacity?: number;
   fullscreen?: boolean;
-  nativeDisplay?: boolean;
 };
 
 program
@@ -87,12 +87,6 @@ program
       'Make the window full screen (width, height, x, and y are ignored)',
     ).default(DEFAULT_FULLSCREEN),
   )
-  .addOption(
-    new Option(
-      '-n, --nativeDisplay',
-      'Open web page in a native window',
-    ).default(DEFAULT_NATIVE_DISPLAY),
-  )
   .argument(
     '[configfile]',
     'The path to a config file',
@@ -106,18 +100,24 @@ const configFile = program.args.length
   ? path.resolve(program.args[0])
   : path.resolve(__dirname, '..', 'config.json');
 const options = program.opts();
-const { url, x, y, width, height, title, opacity, fullscreen, nativeDisplay } =
-  options;
+const { url, x, y, width, height, title, opacity, fullscreen } = options;
 
+// All the open overlay windows.
 const wins: {
   conf: Conf;
-  win: BrowserWindow;
+  win: BaseWindow;
+  handleView: WebContentsView;
+  webView: WebContentsView;
 }[] = [];
+// Config editor window.
 let configEditorWindow: BrowserWindow | undefined;
+// Help window.
 let helpWindow: BrowserWindow | undefined;
 
 ipcMain.handle('requestConfig', (event) => {
-  const entry = wins.find((entry) => event.sender === entry.win.webContents);
+  const entry = wins.find(
+    (entry) => event.sender === entry.handleView.webContents,
+  );
   if (entry) {
     const { conf } = entry;
     event.sender.send('config', conf);
@@ -226,7 +226,6 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     title = DEFAULT_TITLE,
     opacity = DEFAULT_OPACITY,
     fullscreen = DEFAULT_FULLSCREEN,
-    nativeDisplay = DEFAULT_NATIVE_DISPLAY,
   } = conf;
 
   const primaryDisplay = screen.getPrimaryDisplay();
@@ -273,10 +272,7 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     y = getPercent(y) * displayHeight;
   }
 
-  let win = new BrowserWindow({
-    webPreferences: {
-      preload: path.join(__dirname, '..', 'assets', 'preload.js'),
-    },
+  let win = new BaseWindow({
     maximizable: false,
     resizable: false,
     alwaysOnTop: !interactable,
@@ -293,17 +289,41 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     opacity,
     fullscreen,
   });
+  win.setBackgroundColor('rgba(0, 0, 0, 0.0)');
+
+  const handleView = new WebContentsView({
+    webPreferences: {
+      preload: path.join(__dirname, '..', 'assets', 'preload.js'),
+    },
+  });
+  win.contentView.addChildView(handleView);
+  handleView.webContents.loadFile(
+    path.join(__dirname, '..', 'assets', 'page.html'),
+  );
+  handleView.setBackgroundColor('rgba(0, 0, 0, 0.0)');
+  handleView.setBounds({ x: 0, y: 0, width, height: 0 });
+  handleView.setVisible(false);
+
+  const webView = new WebContentsView({
+    webPreferences: {
+      sandbox: true,
+      backgroundThrottling: false,
+      safeDialogs: true,
+      disableHtmlFullscreenWindowResize: true,
+    },
+  });
+  win.contentView.addChildView(webView);
+  webView.webContents.loadURL(conf.url);
+  webView.setBackgroundColor('rgba(0, 0, 0, 0.0)');
+  webView.setBounds({ x: 0, y: 0, width, height });
 
   const timer = setInterval(() => win.moveTop(), 1000);
 
-  if (nativeDisplay) {
-    win.loadURL(conf.url);
-  } else {
-    win.loadFile(path.join(__dirname, '..', 'assets', 'page.html'));
-  }
-
   // Emitted when the window is closed.
   win.on('closed', () => {
+    handleView.webContents.close();
+    webView.webContents.close();
+
     clearInterval(timer);
 
     // Dereference the window object, usually you would store windows
@@ -319,7 +339,15 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
   const focus = () => {
     win.setIgnoreMouseEvents(false);
     win.setBackgroundColor('#ddd');
-    win.webContents.send('focus');
+
+    handleView.setBounds({ x: 0, y: 0, width: width as number, height: 30 });
+    handleView.setVisible(true);
+    webView.setBounds({
+      x: 0,
+      y: 30,
+      width: width as number,
+      height: (height as number) - 30,
+    });
   };
   win.on('focus', focus);
 
@@ -332,7 +360,17 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
       win.setIgnoreMouseEvents(true);
     }
     win.setBackgroundColor('rgba(0, 0, 0, 0.0)');
-    win.webContents.send('blur');
+    handleView.setBounds({ x: 0, y: 0, width: width as number, height: 0 });
+    handleView.setVisible(false);
+    webView.setBounds({
+      x: 0,
+      y: 0,
+      width: width as number,
+      height: height as number,
+    });
+
+    // This is necessary until this is fixed: https://github.com/electron/electron/issues/46882
+    app.emit('browser-window-blur');
   });
 
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
@@ -341,7 +379,7 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
   }
   // win.webContents.openDevTools();
 
-  wins.push({ win, conf });
+  wins.push({ win, conf, handleView, webView });
   makeTray();
 };
 
@@ -432,7 +470,11 @@ const makeTray = () => {
             label: 'Close All Overlays',
             click: () => {
               for (let entry of wins) {
-                entry.win.close();
+                // Use setImmediate so the actions in the close event don't
+                // prevent the rest from closing.
+                setImmediate(() => {
+                  entry.win.close();
+                });
               }
             },
           },
@@ -537,14 +579,23 @@ app.whenReady().then(() => {
       height,
       opacity,
       fullscreen,
-      nativeDisplay,
     });
   }
 
   createOverlayWindows();
 
-  app.on('activate', function () {
+  app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createOverlayWindows();
+  });
+
+  app.on('browser-window-blur', () => {
+    const windows = BaseWindow.getAllWindows();
+    for (let window of windows) {
+      if (!window.isMaximizable()) {
+        // This is necessary until this is fixed: https://github.com/electron/electron/issues/46882
+        window.setMaximizable(false);
+      }
+    }
   });
 
   makeTray();
