@@ -12,7 +12,7 @@
     >URL{#if win.url.includes('YOURSECRETCODE')}&nbsp;<span
         tabindex="0"
         style="text-decoration: dotted; cursor: help;"
-        title="It looks like you haven't filled in your Widget URL. Head to streamlabs.com to get the URL for your widget."
+        title="It looks like you haven't filled in your Widget URL. Head to streamlabs.com (or other widget provider, e.g. Twitch, jChat, etc.) to get the URL for your widget."
         >&#9888;</span
       >{/if}</label
   >
@@ -36,6 +36,22 @@
       >👀</button
     >
   </div>
+</div>
+<div class="mb-3 form-check form-switch">
+  <input
+    type="checkbox"
+    role="switch"
+    class="form-check-input"
+    id="nativeDisplay{i}"
+    bind:checked={win.nativeDisplay}
+  />
+  <label for="nativeDisplay{i}" class="form-check-label"
+    >Display as native window{#if win.url.includes('twitch.tv') && !win.nativeDisplay}&nbsp;<span
+    tabindex="0"
+    style="text-decoration: dotted; cursor: help;"
+    title="It is recommended to display widgets from Twitch as a native window due to Twitch limitations."
+    >&#9888;</span
+  >{/if}</label>
 </div>
 <div class="mb-3 form-check form-switch">
   <input
