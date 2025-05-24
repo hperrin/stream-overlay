@@ -20,9 +20,9 @@
             <li>
               <button
                 class="dropdown-item"
-                on:click={() =>
+                onclick={() =>
                   electronAPI.requestLaunch({
-                    config: [win],
+                    config: [$state.snapshot(win)],
                     mode: 'clickable',
                   })}>Clickable</button
               >
@@ -30,9 +30,9 @@
             <li>
               <button
                 class="dropdown-item"
-                on:click={() =>
+                onclick={() =>
                   electronAPI.requestLaunch({
-                    config: [win],
+                    config: [$state.snapshot(win)],
                     mode: 'normal',
                   })}>Click-Through</button
               >
@@ -45,7 +45,7 @@
         style="display: flex; flex-direction: column; justify-content: space-between;"
       >
         <div class="card-text">
-          <WindowEditor bind:win />
+          <WindowEditor bind:win={config[i]} />
         </div>
         <div style="display: flex; justify-content: space-between;">
           <div>
@@ -53,16 +53,16 @@
               class="btn btn-secondary"
               title="Move left"
               disabled={i === 0}
-              on:click={() => moveLeft(i)}>&lt;</button
+              onclick={() => moveLeft(i)}>&lt;</button
             >
             <button
               class="btn btn-secondary"
               title="Move right"
               disabled={i === config.length - 1}
-              on:click={() => moveRight(i)}>&gt;</button
+              onclick={() => moveRight(i)}>&gt;</button
             >
           </div>
-          <button class="btn btn-danger" on:click={() => removeWindow(i)}
+          <button class="btn btn-danger" onclick={() => removeWindow(i)}
             >Remove</button
           >
         </div>
@@ -73,28 +73,19 @@
   {/each}
 </div>
 <div>
-  <button class="btn btn-primary" on:click={addWindow}>Add Window</button>
+  <button class="btn btn-primary" onclick={addWindow}>Add Window</button>
 </div>
 
 <script lang="ts">
-  import { afterUpdate } from 'svelte';
   import type { Conf } from '$lib/Conf';
   import electronAPI from '$lib/electronAPI';
   import WindowEditor from '$lib/WindowEditor.svelte';
 
-  export let dirty = false;
-  export let config: Conf[];
-
-  let oldConfig = JSON.stringify(config);
-  $: if (!dirty && oldConfig !== JSON.stringify(config)) {
-    dirty = true;
-  }
-
-  afterUpdate(() => {
-    if (!dirty) {
-      oldConfig = JSON.stringify(config);
-    }
-  });
+  let {
+    config = $bindable(),
+  }: {
+    config: Conf[];
+  } = $props();
 
   function addWindow() {
     config.push({

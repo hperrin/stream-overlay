@@ -6,7 +6,7 @@
       class="form-check-input"
       id="valueCentered{i}"
       checked={valueCentered}
-      on:click={() => (value = -1)}
+      onclick={() => (value = -1)}
     />
     <label for="valueCentered{i}" class="form-check-label">Centered</label>
   </div>
@@ -18,7 +18,7 @@
     class="form-check-input"
     id="valuePercent{i}"
     checked={valuePercent}
-    on:click={() => (value = '')}
+    onclick={() => (value = '')}
   />
   <label for="valuePercent{i}" class="form-check-label">Percentage</label>
 </div>
@@ -29,7 +29,7 @@
     class="form-check-input"
     id="valuePixel{i}"
     checked={valuePixel}
-    on:click={() => (value = 0)}
+    onclick={() => (value = 0)}
   />
   <label for="valuePixel{i}" class="form-check-label">Pixels</label>
 </div>
@@ -43,7 +43,7 @@
       bind:value
       placeholder="15.0%"
       pattern="^\d+(\.\d+)?%$"
-      on:change={() =>
+      onchange={() =>
         (value =
           (isNaN(parseFloat(`${value}`)) ? '0' : parseFloat(`${value}`)) + '%')}
     />
@@ -54,17 +54,22 @@
   </div>
 {/if}
 
-<script lang="ts" context="module">
+<script lang="ts" module>
   let counter = 0;
 </script>
 
 <script lang="ts">
-  export let value: number | string = 0;
-  export let allowCentered = false;
+  let {
+    value = $bindable(0),
+    allowCentered = false,
+  }: {
+    value?: number | string;
+    allowCentered?: boolean;
+  } = $props();
 
-  $: valueCentered = value === -1;
-  $: valuePercent = typeof value === 'string';
-  $: valuePixel = typeof value === 'number' && value !== -1;
+  let valueCentered = $derived(value === -1);
+  let valuePercent = $derived(typeof value === 'string');
+  let valuePixel = $derived(typeof value === 'number' && value !== -1);
 
   let i = counter++;
 </script>

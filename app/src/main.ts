@@ -334,6 +334,9 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
       wins.splice(i, 1);
       makeTray();
     }
+
+    // This is necessary until this is fixed: https://github.com/electron/electron/issues/46882
+    app.emit('browser-window-blur');
   });
 
   const focus = () => {
@@ -414,6 +417,16 @@ const createConfigEditorWindow = () => {
     makeTray();
   });
 
+  configEditorWindow.on('closed', () => {
+    // This is necessary until this is fixed: https://github.com/electron/electron/issues/46882
+    app.emit('browser-window-blur');
+  });
+
+  configEditorWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
   makeTray();
 };
 
@@ -439,6 +452,11 @@ const createHelpWindow = () => {
 
   helpWindow.on('close', () => {
     helpWindow = undefined;
+  });
+
+  helpWindow.on('closed', () => {
+    // This is necessary until this is fixed: https://github.com/electron/electron/issues/46882
+    app.emit('browser-window-blur');
   });
 
   helpWindow.webContents.setWindowOpenHandler(({ url }) => {

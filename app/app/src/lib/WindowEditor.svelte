@@ -32,7 +32,7 @@
         bind:value={win.url}
       />
     {/if}
-    <button class="input-group-text" on:click={() => (showUrl = !showUrl)}
+    <button class="input-group-text" onclick={() => (showUrl = !showUrl)}
       >👀</button
     >
   </div>
@@ -66,7 +66,7 @@
   <NumberEditor bind:value={win.height} />
 {/if}
 
-<script lang="ts" context="module">
+<script lang="ts" module>
   let counter = 0;
 </script>
 
@@ -74,8 +74,12 @@
   import type { Conf } from '$lib/Conf';
   import NumberEditor from '$lib/NumberEditor.svelte';
 
-  export let win: Conf;
+  let {
+    win = $bindable(),
+  }: {
+    win: Conf;
+  } = $props();
 
-  let showUrl = false;
+  let showUrl = $state(false);
   let i = counter++;
 </script>

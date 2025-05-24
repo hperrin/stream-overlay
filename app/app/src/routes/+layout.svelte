@@ -31,14 +31,21 @@
 </svelte:head>
 
 <div style="padding: 1em; height: 100%;">
-  <slot />
+  {@render children?.()}
 </div>
 
 <Bootstrap />
 
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import Bootstrap from './_bootstrap.svelte';
   import { assets } from '$app/paths';
+
+  let {
+    children,
+  }: {
+    children?: Snippet;
+  } = $props();
 </script>
 
 <style>

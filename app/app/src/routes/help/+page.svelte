@@ -24,22 +24,18 @@
 
 <p>
   Create a config file with your overlay setup and save it to your computer. You
-  can then open the config file with the app, or run it from within the app.
+  can then open the config file with the app, or launch it from the config
+  editor.
 </p>
 
 <h2>Interaction</h2>
 
 <p>
   You can see a list of open overlay windows from the "Sylphweed's Stream
-  Overlay" tray icon's menu. You can also open this config editor or exit the
-  app from here.
-</p>
-
-<p>
-  When a window is focused (by clicking it from the tray icon menu) it will have
-  an opaque background, and a handle to drag it around. Once it loses focus, it
-  will go back to transparent, and will be click-through again, so you can click
-  the apps behind it.
+  Overlay" tray icon menu. Selecting one will focus that window. When a window
+  is focused it will have an opaque background, and a handle to drag it around.
+  Once it loses focus, it will go back to transparent, and will be click-through
+  again, so you can click the apps behind it.
 </p>
 
 <h2>Fullscreen Apps</h2>
@@ -54,10 +50,12 @@
 <h2>Support Me</h2>
 
 <p>
-  You can support me directly by supporting my software company, SciActive, on
-  Patreon:<br />
-  <a href="https://www.patreon.com/sciactive" target="_blank"
-    >https://www.patreon.com/sciactive</a
+  You can support me directly by supporting my email service, Port87:<br />
+  <a href="https://port87.com/" target="_blank">https://port87.com/</a><br /><br
+  />
+  You can also buy stuff from my merch shop, Ice Cream on a Hot Dog:<br />
+  <a href="https://icecreamonahotdog.com/" target="_blank"
+    >https://icecreamonahotdog.com/</a
   ><br /><br />
   You can also support me for free by following me on Twitch:<br />
   <a href="https://www.twitch.tv/sylphweed" target="_blank"

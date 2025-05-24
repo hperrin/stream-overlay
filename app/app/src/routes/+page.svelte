@@ -5,13 +5,13 @@
 <div class="editor-container">
   <div class="mb-3" style="display: flex; justify-content: space-between;">
     <div class="buttons">
-      <button class="btn btn-secondary" on:click={newConfig}>New</button>
+      <button class="btn btn-secondary" onclick={newConfig}>New</button>
       <button
         class="btn btn-secondary"
-        on:click={() => electronAPI.requestConfigFile()}>Open</button
+        onclick={() => electronAPI.requestConfigFile()}>Open</button
       >
     </div>
-    <button class="btn btn-secondary" on:click={() => electronAPI.requestHelp()}
+    <button class="btn btn-secondary" onclick={() => electronAPI.requestHelp()}
       >Help</button
     >
   </div>
@@ -27,8 +27,17 @@
           class:active={activeIndex === i}
           aria-current="page"
           title={entry.filename}
-          on:mouseup={(event) => handleTabClick(event, i)}
-          >{entry.basename}{#if entry.dirty}*{/if}</button
+          onclick={(event) => handleTabClick(event, i)}
+          >{entry.basename}{#if JSON.stringify(entry.config) !== entry.origConfig}*{/if}<i
+            role="button"
+            class="close-tab btn-close"
+            aria-label="Close"
+            onclick={(event) => handleTabCloseClick(event, i)}
+            onkeypress={(event) =>
+              (event.key === 'Enter' || event.key === 'Space') &&
+              handleTabCloseClick(event, i)}
+            tabindex={0}
+          ></i></button
         >
       </li>
     {/each}
@@ -42,18 +51,18 @@
             <button
               class="btn btn-secondary"
               disabled={activeConfig.filename === ''}
-              on:click={() =>
+              onclick={() =>
                 electronAPI.requestSave({
-                  config: activeConfig.config,
+                  config: $state.snapshot(activeConfig.config),
                   filename: activeConfig.filename,
                   uid: activeConfig.uid || '',
                 })}>Save</button
             >
             <button
               class="btn btn-secondary"
-              on:click={() =>
+              onclick={() =>
                 electronAPI.requestSaveAs({
-                  config: activeConfig.config,
+                  config: $state.snapshot(activeConfig.config),
                   uid: activeConfig.uid || '',
                 })}>Save As</button
             >
@@ -72,9 +81,9 @@
               <li>
                 <button
                   class="dropdown-item"
-                  on:click={() =>
+                  onclick={() =>
                     electronAPI.requestLaunch({
-                      config: activeConfig.config,
+                      config: $state.snapshot(activeConfig.config),
                       mode: 'clickable',
                     })}>Clickable</button
                 >
@@ -82,9 +91,9 @@
               <li>
                 <button
                   class="dropdown-item"
-                  on:click={() =>
+                  onclick={() =>
                     electronAPI.requestLaunch({
-                      config: activeConfig.config,
+                      config: $state.snapshot(activeConfig.config),
                       mode: 'normal',
                     })}>Click-Through</button
                 >
@@ -93,10 +102,7 @@
           </div>
         </div>
 
-        <ConfigEditor
-          bind:config={activeConfig.config}
-          bind:dirty={activeConfig.dirty}
-        />
+        <ConfigEditor bind:config={activeConfig.config} />
       {:else}
         <p class="p-3" style="text-align: center;">
           Start by creating a new config file or open an existing one.
@@ -117,9 +123,9 @@
   import ConfigEditor from '$lib/ConfigEditor.svelte';
   import Help from './help/+page.svelte';
 
-  let configs: ConfContainer[] = [];
-  let activeIndex = 0;
-  $: activeConfig = configs[activeIndex];
+  let configs: ConfContainer[] = $state([]);
+  let activeIndex = $state(0);
+  let activeConfig = $derived(configs[activeIndex]);
 
   electronAPI.configFile((_event, data) => {
     const idx = configs.findIndex((check) => data.filename === check.filename);
@@ -128,10 +134,9 @@
       activeIndex = idx;
     } else {
       data.uid = uniqueId();
-      data.dirty = false;
+      data.origConfig = JSON.stringify(data.config);
       configs.push(data);
       activeIndex = configs.length - 1;
-      configs = configs;
     }
   });
 
@@ -141,14 +146,13 @@
     if (idx > -1) {
       configs[idx].filename = filename;
       configs[idx].basename = basename;
-      configs[idx].dirty = false;
+      configs[idx].origConfig = JSON.stringify(configs[idx].config);
     }
   });
 
   function newConfig() {
     configs.push({
       uid: uniqueId(),
-      dirty: false,
       filename: '',
       basename: 'New Config File',
       config: [
@@ -177,11 +181,31 @@
     if (event.button === 0) {
       activeIndex = index;
     } else if (event.button === 1) {
-      configs.splice(index, 1);
-      configs = configs;
-      if (activeIndex === index) {
-        activeIndex = Math.min(index, Math.max(configs.length - 1, 0));
+      handleTabCloseClick(event, index);
+    }
+  }
+
+  function handleTabCloseClick(
+    event: MouseEvent | KeyboardEvent,
+    index: number,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const config = configs[index];
+    if (config.origConfig !== JSON.stringify(config.config)) {
+      if (
+        !confirm(
+          'There are unsaved changes that will be lost if you close this file. Are you sure you want to close it and lose these changes?',
+        )
+      ) {
+        return;
       }
+    }
+
+    configs.splice(index, 1);
+    if (activeIndex === index) {
+      activeIndex = Math.min(index, Math.max(configs.length - 1, 0));
     }
   }
 </script>
@@ -206,5 +230,13 @@
     overflow-y: auto;
     padding: 1em;
     border-color: var(--tab-border-color) !important;
+  }
+
+  .close-tab {
+    display: inline-block;
+    vertical-align: text-top;
+    width: 0.4em;
+    height: 0.4em;
+    margin-inline-start: 0.5em;
   }
 </style>
