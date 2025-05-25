@@ -14,13 +14,9 @@ Head over to the [releases page](https://github.com/hperrin/stream-overlay/relea
 
 ## Notes
 
-### Windows
+### Updates
 
 You can check for updates through the system tray menu.
-
-### Linux
-
-You need to be using X, not Wayland. Everything works in Wayland except click-through windows.
 
 ## Development
 
@@ -62,9 +58,13 @@ npm run package:flatpak
 
 ## Support Me
 
-You can support me directly by supporting my software company, SciActive, on Patreon:
+You can support me directly by supporting my email service, Port87:
 
-https://www.patreon.com/sciactive
+https://port87.com/
+
+You can also buy stuff from my merch shop, Ice Cream on a Hot Dog:
+
+https://icecreamonahotdog.com/
 
 You can also support me for free by following me on Twitch:
 

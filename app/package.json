@@ -1,6 +1,6 @@
 {
   "name": "stream-overlay",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "Show borderless, transparent, click-through browser windows for streaming.",
   "icon": "assets/logo.png",
   "main": "build/main.js",
