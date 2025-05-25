@@ -17,6 +17,9 @@ import {
 } from 'electron';
 import type { MenuItemConstructorOptions, MenuItem } from 'electron';
 
+// Needed until https://github.com/electron/electron/issues/46538 is fixed.
+app.commandLine.appendSwitch('gtk-version', '3');
+
 const pkg = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '..', 'package.json')).toString(),
 );
