@@ -40,22 +40,6 @@ npm run build
 npm run package:windows # or package:linux
 ```
 
-### Flatpak
-
-You need to install `pipx` and then the Flatpak node tools:
-
-```sh
-git clone https://github.com/flatpak/flatpak-builder-tools.git
-cd flatpak-builder-tools/node/
-pipx install .
-```
-
-To build the flatpak and install it locally (on Linux), run the following after the above commands.
-
-```sh
-npm run package:flatpak
-```
-
 ## Support Me
 
 You can support me directly by supporting my email service, Port87:
