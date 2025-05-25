@@ -48,8 +48,8 @@
       "target": [
         "nsis"
       ],
-      "icon": "app/assets/logo.ico",
-      "publisherName": "Hunter Perrin"
+      "appId": "com.hperrin.StreamOverlay",
+      "icon": "app/assets/logo.ico"
     },
     "nsis": {
       "installerIcon": "app/assets/logo.ico",
@@ -59,9 +59,16 @@
       "target": [
         "AppImage"
       ],
+      "appId": "com.hperrin.StreamOverlay",
       "icon": "app/assets/512x512.png",
-      "maintainer": "com.hperrin.StreamOverlay",
       "category": "Utility",
+      "fileAssociations": [
+        {
+          "ext": "streamoverlay",
+          "name": "Stream Overlay Config",
+          "mimeType": "application/x-stream-overlay-config"
+        }
+      ],
       "vendor": "Hunter Perrin"
     },
     "fileAssociations": [
