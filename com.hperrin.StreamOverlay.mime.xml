@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mime-type xmlns="http://www.freedesktop.org/standards/shared-mime-info"
-  type="application/x-stream-overlay-config">
-  <comment>Stream Overlay Config</comment>
-  <sub-class-of type="application/json" />
-  <sub-class-of type="text/plain" />
-  <generic-icon name="text-x-script" />
-  <glob pattern="*.streamoverlay" />
-</mime-type>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="application/x-streamoverlay">
+    <glob pattern="*.streamoverlay" />
+    <comment>Stream Overlay Config</comment>
+    <sub-class-of type="application/json" />
+    <sub-class-of type="text/plain" />
+    <generic-icon name="text-x-script" />
+  </mime-type>
+</mime-info>

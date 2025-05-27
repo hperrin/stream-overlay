@@ -9,4 +9,4 @@ Version=1.0
 Type=Application
 Terminal=false
 Categories=Utility
-MimeType=application/x-stream-overlay-config
+MimeType=application/x-streamoverlay

@@ -62,7 +62,7 @@
         {
           "ext": "streamoverlay",
           "name": "Stream Overlay Config",
-          "mimeType": "application/x-stream-overlay-config"
+          "mimeType": "application/x-streamoverlay"
         }
       ],
       "vendor": "Hunter Perrin"
@@ -71,7 +71,7 @@
       {
         "ext": "streamoverlay",
         "name": "Stream Overlay Config",
-        "mimeType": "application/x-stream-overlay-config"
+        "mimeType": "application/x-streamoverlay"
       }
     ]
   }
