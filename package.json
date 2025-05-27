@@ -29,7 +29,7 @@
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.8",
     "electron": "^36.3.1",
-    "electron-builder": "^26.0.12",
+    "electron-builder": "^25.1.8",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^3.4.0",
     "svelte": "^5.33.1",
