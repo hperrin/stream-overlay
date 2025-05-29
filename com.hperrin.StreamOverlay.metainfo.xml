@@ -11,10 +11,10 @@
     <category>Utility</category>
   </categories>
 
-  <summary><![CDATA[Show transparent, click-through browser window overlays on screen. Like your Twitch chat and alerts on top of your game.]]></summary>
+  <summary>Browser overlays on your screen.</summary>
 
   <description>
-    <p>This app shows borderless, transparent, click-through browser windows for streaming. For
+    <p>Borderless, transparent, click-through, always-on-top browser windows for streaming. For
       example, you can show your Twitch chat and alerts on your display, over your game.</p>
     <p>I made this app because I would often not notice my chat messages on my other monitor, and
       I'd prefer to have them come up on the display I'm looking at, rather than only in an OBS
@@ -73,6 +73,11 @@
     <value key="GnomeSoftware::popular-background">
       https://raw.githubusercontent.com/hperrin/stream-overlay/9b2cc22e3a28d9e896427dff89c5f9384a4908cb/screenshots/overlays.png</value>
   </metadata>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#b7ffff</color>
+    <color type="primary" scheme_preference="dark">#008080</color>
+  </branding>
 
   <url type="homepage">https://github.com/hperrin/stream-overlay</url>
   <url type="bugtracker">https://github.com/hperrin/stream-overlay/issues</url>
