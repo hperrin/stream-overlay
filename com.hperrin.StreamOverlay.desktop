@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Stream Overlay
 GenericName=Stream Overlay
-Comment=SylphWeed's Stream Overlay
-Keywords=sylphweed;stream;overlay
+Comment=Stream Overlay
+Keywords=stream;overlay
 Exec=run.sh %f
 Icon=com.hperrin.StreamOverlay
 Version=1.0

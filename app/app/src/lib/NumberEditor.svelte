@@ -20,7 +20,7 @@
     checked={valuePercent}
     onclick={() => (value = '')}
   />
-  <label for="valuePercent{i}" class="form-check-label">Percentage</label>
+  <label for="valuePercent{i}" class="form-check-label">Percent</label>
 </div>
 <div class="mb-3 form-check form-check-inline">
   <input
@@ -39,6 +39,7 @@
     <input
       type="text"
       class="form-control"
+      data-bs-theme="light"
       id="x{i}"
       bind:value
       placeholder="15.0%"
@@ -50,7 +51,13 @@
   </div>
 {:else if valuePixel}
   <div class="mb-3">
-    <input type="number" class="form-control" id="x{i}" bind:value />
+    <input
+      type="number"
+      class="form-control"
+      data-bs-theme="light"
+      id="x{i}"
+      bind:value
+    />
   </div>
 {/if}
 

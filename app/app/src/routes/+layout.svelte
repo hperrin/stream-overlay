@@ -1,11 +1,5 @@
 <svelte:head>
-  <link rel="stylesheet" href="{assets}/bootstrap-flatly.min.css" />
-
-  <link
-    rel="stylesheet"
-    media="(prefers-color-scheme: dark)"
-    href="{assets}/bootstrap-darkly.min.css"
-  />
+  <link rel="stylesheet" href="{assets}/bootstrap.min.css" />
 
   <style>
     html,
@@ -41,6 +35,21 @@
   import Bootstrap from './_bootstrap.svelte';
   import { assets } from '$app/paths';
 
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.setAttribute('data-bs-theme', 'dark');
+    }
+
+    window
+      .matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', (event) => {
+        document.body.setAttribute(
+          'data-bs-theme',
+          event.matches ? 'dark' : 'light',
+        );
+      });
+  }
+
   let {
     children,
   }: {
@@ -49,13 +58,13 @@
 </script>
 
 <style>
-  :global(:root) {
-    --tab-border-color: #ecf0f1;
+  :global(.nav-tabs .nav-link.active) {
+    border-width: 1px !important;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :global(:root) {
-      --tab-border-color: #444;
-    }
+  :global(.btn-purple) {
+    border-color: var(--bs-purple) !important;
+    background-color: var(--bs-purple) !important;
+    color: var(--bs-white) !important;
   }
 </style>

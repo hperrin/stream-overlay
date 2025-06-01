@@ -7,7 +7,7 @@ node_modules
 /.flatpak-builder
 
 /app/build
-/app/app/static/bootstrap-*.min.css
+/app/app/static/bootstrap*.min.css
 
 /app/app/build
 /app/app/.svelte-kit

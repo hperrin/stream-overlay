@@ -3,6 +3,7 @@
   <input
     type="text"
     class="form-control"
+    data-bs-theme="light"
     id="title{i}"
     bind:value={win.title}
   />
@@ -21,6 +22,7 @@
       <input
         type="text"
         class="form-control"
+        data-bs-theme="light"
         id="url{i}"
         bind:value={win.url}
       />
@@ -28,6 +30,7 @@
       <input
         type="password"
         class="form-control"
+        data-bs-theme="light"
         id="url{i}"
         bind:value={win.url}
       />
@@ -68,7 +71,16 @@
 
 <h5>Scale</h5>
 <div class="mb-3">
-  <input type="number" class="form-control" id="scale{i}" min={0.3} max={5} step={0.1} bind:value={win.scale} />
+  <input
+    type="number"
+    class="form-control"
+    data-bs-theme="light"
+    id="scale{i}"
+    min={0.3}
+    max={5}
+    step={0.1}
+    bind:value={win.scale}
+  />
 </div>
 
 <script lang="ts" module>

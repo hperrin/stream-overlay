@@ -1,6 +1,8 @@
-<div style="display: flex; flex-wrap: wrap; align-items: stretch;">
+<div
+  style="display: flex; flex-wrap: wrap; align-items: stretch; gap: 1em; margin: 1em 0;"
+>
   {#each config as win, i}
-    <div class="card" style="width: 360px; margin: 1em;">
+    <div class="card" style="width: 360px;">
       <div
         class="card-header"
         style="display: flex; justify-content: space-between; align-items: center;"
@@ -8,7 +10,7 @@
         <span>{win.title}</span>
         <div class="dropdown">
           <button
-            class="btn btn-secondary dropdown-toggle"
+            class="btn btn-purple dropdown-toggle"
             type="button"
             id="launchDropdown"
             data-bs-toggle="dropdown"

@@ -43,7 +43,7 @@
     {/each}
   </ul>
 
-  <div class="tab-container border-end border-bottom border-start">
+  <div class="tab-container">
     {#key activeIndex}
       {#if activeConfig}
         <div style="display: flex; justify-content: space-between;">
@@ -69,7 +69,7 @@
           </div>
           <div class="dropdown">
             <button
-              class="btn btn-secondary dropdown-toggle"
+              class="btn btn-purple dropdown-toggle"
               type="button"
               id="launchDropdown"
               data-bs-toggle="dropdown"
@@ -240,15 +240,16 @@
     flex-basis: 0;
     flex-grow: 1;
     overflow-y: auto;
-    padding: 1em;
+    padding-top: 1em;
     border-color: var(--tab-border-color) !important;
   }
 
   .close-tab {
     display: inline-block;
-    vertical-align: text-top;
-    width: 0.4em;
-    height: 0.4em;
+    vertical-align: middle;
+    width: 0.3em;
+    height: 0.3em;
     margin-inline-start: 0.5em;
+    font-size: 0.9em;
   }
 </style>

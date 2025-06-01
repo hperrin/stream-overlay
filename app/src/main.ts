@@ -484,7 +484,7 @@ const createHelpWindow = () => {
 const makeTray = () => {
   if (!tray) {
     tray = new Tray(path.resolve(__dirname, '..', 'assets', 'logo.png'));
-    tray.setToolTip("SylphWeed's Stream Overlay");
+    tray.setToolTip('Stream Overlay');
   }
   const contextMenu = Menu.buildFromTemplate([
     ...wins.map(({ conf, win }, index) => ({

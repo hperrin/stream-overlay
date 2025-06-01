@@ -1,4 +1,4 @@
-<h2>SylphWeed's Stream Overlay</h2>
+<h2>Stream Overlay</h2>
 
 <p>
   This app shows borderless, transparent, click-through browser windows for
@@ -31,11 +31,11 @@
 <h2>Interaction</h2>
 
 <p>
-  You can see a list of open overlay windows from the "Sylphweed's Stream
-  Overlay" tray icon menu. Selecting one will focus that window. When a window
-  is focused it will have an opaque background, and a handle to drag it around.
-  Once it loses focus, it will go back to transparent, and will be click-through
-  again, so you can click the apps behind it.
+  You can see a list of open overlay windows from the "Stream Overlay" tray icon
+  menu. Selecting one will focus that window. When a window is focused it will
+  have an opaque background, and a handle to drag it around. Once it loses
+  focus, it will go back to transparent, and will be click-through again, so you
+  can click the apps behind it.
 </p>
 
 <h2>Fullscreen Apps</h2>

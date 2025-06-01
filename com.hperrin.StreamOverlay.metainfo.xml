@@ -75,8 +75,8 @@
   </metadata>
 
   <branding>
-    <color type="primary" scheme_preference="light">#b7ffff</color>
-    <color type="primary" scheme_preference="dark">#008080</color>
+    <color type="primary" scheme_preference="light">#88ceff</color>
+    <color type="primary" scheme_preference="dark">#210967</color>
   </branding>
 
   <url type="homepage">https://github.com/hperrin/stream-overlay</url>

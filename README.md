@@ -1,4 +1,4 @@
-# SylphWeed's Stream Overlay
+# Stream Overlay
 
 Borderless, transparent, click-through browser windows for streaming.
 
@@ -10,7 +10,13 @@ I made this app because I would often not notice my chat messages on my other mo
 
 ## Download
 
+### Windows
+
 Head over to the [releases page](https://github.com/hperrin/stream-overlay/releases) to download the latest version.
+
+### Linux
+
+You can install Stream Overlay [from Flathub](https://flathub.org/apps/com.hperrin.StreamOverlay). You can also get the AppImage from the [releases page](https://github.com/hperrin/stream-overlay/releases).
 
 ## Notes
 
