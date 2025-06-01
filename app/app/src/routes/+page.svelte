@@ -136,6 +136,9 @@
       data.uid = uniqueId();
       data.origConfig = JSON.stringify(data.config);
       data.config.forEach((window) => {
+        if (!('display' in window)) {
+          window.display = 0;
+        }
         if (!('fullscreen' in window)) {
           window.fullscreen = false;
         }
@@ -167,6 +170,7 @@
         {
           title: 'Chat',
           url: 'https://streamlabs.com/widgets/chat-box/v1/YOURSECRETCODE',
+          display: 0,
           fullscreen: false,
           x: 50,
           y: -1,
@@ -177,6 +181,7 @@
         {
           title: 'Alerts',
           url: 'https://streamlabs.com/alert-box/v3/YOURSECRETCODE',
+          display: 0,
           fullscreen: false,
           x: -1,
           y: 20,

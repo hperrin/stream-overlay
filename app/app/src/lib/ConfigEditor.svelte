@@ -93,10 +93,13 @@
     config.push({
       title: 'Untitled Window',
       url: 'https://example.com/',
+      display: 0,
+      fullscreen: false,
       x: -1,
       y: -1,
       width: 500,
       height: 500,
+      scale: 1,
     });
     config = config;
   }

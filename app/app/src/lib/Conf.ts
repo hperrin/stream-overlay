@@ -1,6 +1,7 @@
 export type Conf = {
   url: string;
   title?: string;
+  display?: number;
   width?: number | string;
   height?: number | string;
   x?: number | string;

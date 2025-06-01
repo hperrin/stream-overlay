@@ -26,6 +26,7 @@ const pkg = JSON.parse(
 
 const DEV = process.env.NODE_ENV !== 'production';
 const DEFAULT_TITLE = 'Stream Overlay';
+const DEFAULT_DISPLAY = 0;
 const DEFAULT_WIDTH = 550;
 const DEFAULT_HEIGHT = 650;
 const DEFAULT_X = -1;
@@ -37,6 +38,7 @@ const DEFAULT_SCALE = 1;
 type Conf = {
   url: string;
   title?: string;
+  display?: number;
   width?: number | string;
   height?: number | string;
   x?: number | string;
@@ -58,6 +60,11 @@ program
     './help.html',
   )
   .option('-t, --title <title>', 'Window title', DEFAULT_TITLE)
+  .addOption(
+    new Option('-d, --display <display>', 'Which display (0 for primary)')
+      .default(DEFAULT_DISPLAY, 'primary monitor')
+      .argParser(parseFloat),
+  )
   .addOption(
     new Option(
       '-f, --fullscreen',
@@ -110,7 +117,8 @@ const configFile = program.args.length
   ? path.resolve(program.args[0])
   : path.resolve(__dirname, '..', 'config.json');
 const options = program.opts();
-const { url, x, y, width, height, title, opacity, fullscreen } = options;
+const { title, url, display, fullscreen, x, y, width, height, opacity } =
+  options;
 
 // All the open overlay windows.
 const wins: {
@@ -229,6 +237,7 @@ ipcMain.handle('requestSaveAs', (event, { config, uid }) => {
 
 const createOverlayWindow = (conf: Conf, interactable = false) => {
   let {
+    display = DEFAULT_DISPLAY,
     x = DEFAULT_X,
     y = DEFAULT_Y,
     width = DEFAULT_WIDTH,
@@ -240,8 +249,12 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
   } = conf;
 
   const primaryDisplay = screen.getPrimaryDisplay();
+  const displays = screen.getAllDisplays();
+  const selectedDisplay =
+    (display === 0 ? primaryDisplay : displays[display - 1]) ?? primaryDisplay;
+
   const { width: displayWidth, height: displayHeight } =
-    primaryDisplay.workAreaSize;
+    selectedDisplay.workAreaSize;
 
   const getPercent = (str: string) => {
     if (!str.match(/^\d+(?:\.\d+)?%$/)) {
@@ -291,8 +304,8 @@ const createOverlayWindow = (conf: Conf, interactable = false) => {
     icon: path.join(__dirname, '..', 'assets', 'logo.png'),
     width,
     height,
-    x,
-    y,
+    x: selectedDisplay.workArea.x + x,
+    y: selectedDisplay.workArea.y + y,
     transparent: true,
     frame: false,
     movable: true,
@@ -607,12 +620,13 @@ app.whenReady().then(() => {
     config.push({
       title,
       url,
+      display,
+      fullscreen,
       x,
       y,
       width,
       height,
       opacity,
-      fullscreen,
     });
   }
 

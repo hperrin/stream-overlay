@@ -40,6 +40,24 @@
     >
   </div>
 </div>
+
+<h5>Position</h5>
+
+<h6>Display</h6>
+<div class="mb-3">
+  <input
+    type="number"
+    class="form-control"
+    data-bs-theme="light"
+    id="display{i}"
+    min={0}
+    max={9}
+    step={1}
+    bind:value={win.display}
+  />
+  <small class="form-text text-muted">0 means primary monitor.</small>
+</div>
+
 <div class="mb-3 form-check form-switch">
   <input
     type="checkbox"
@@ -52,8 +70,6 @@
 </div>
 
 {#if !win.fullscreen}
-  <h5>Position</h5>
-
   <h6>Horizontal (X)</h6>
   <NumberEditor bind:value={win.x} allowCentered />
 
