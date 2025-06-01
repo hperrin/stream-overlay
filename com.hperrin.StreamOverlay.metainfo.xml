@@ -24,6 +24,12 @@
   <developer_name>Hunter Perrin</developer_name>
 
   <releases>
+    <release version="6.1.0" date="2025-06-01">
+      <description>
+        <p>Add display option for launching windows on a non-primary display.</p>
+        <p>New icon, better theme, better colors.</p>
+      </description>
+    </release>
     <release version="6.0.0" date="2025-05-25">
       <description>
         <p>Now works with providers that restrict iframe embeds (like the new Twitch Alert box)!</p>
@@ -52,18 +58,13 @@
   <screenshots>
     <screenshot type="default">
       <image type="source">
-        https://raw.githubusercontent.com/hperrin/stream-overlay/9b2cc22e3a28d9e896427dff89c5f9384a4908cb/screenshots/overlays.png</image>
+        https://raw.githubusercontent.com/hperrin/stream-overlay/7fdbcf404e78c46e976837834c41ab960e734a45/screenshots/overlays.png</image>
       <caption>Twitch chat and alerts overlays showing on screen.</caption>
     </screenshot>
     <screenshot type="default">
       <image type="source">
-        https://raw.githubusercontent.com/hperrin/stream-overlay/9b2cc22e3a28d9e896427dff89c5f9384a4908cb/screenshots/editor.png</image>
-      <caption>The editor showing the help content before opening a config file.</caption>
-    </screenshot>
-    <screenshot type="default">
-      <image type="source">
-        https://raw.githubusercontent.com/hperrin/stream-overlay/9b2cc22e3a28d9e896427dff89c5f9384a4908cb/screenshots/config.png</image>
-      <caption>The editor showing an open config file with three overlays set up.</caption>
+        https://raw.githubusercontent.com/hperrin/stream-overlay/7fdbcf404e78c46e976837834c41ab960e734a45/screenshots/editor.png</image>
+      <caption>The editor showing an open config file with overlays set up.</caption>
     </screenshot>
   </screenshots>
 
@@ -71,7 +72,7 @@
 
   <metadata>
     <value key="GnomeSoftware::popular-background">
-      https://raw.githubusercontent.com/hperrin/stream-overlay/9b2cc22e3a28d9e896427dff89c5f9384a4908cb/screenshots/overlays.png</value>
+      https://raw.githubusercontent.com/hperrin/stream-overlay/7fdbcf404e78c46e976837834c41ab960e734a45/screenshots/overlays.png</value>
   </metadata>
 
   <branding>
