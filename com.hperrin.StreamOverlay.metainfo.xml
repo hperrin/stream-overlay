@@ -11,7 +11,7 @@
     <category>Utility</category>
   </categories>
 
-  <summary>Browser overlays on your screen.</summary>
+  <summary>Browser overlays on your screen</summary>
 
   <description>
     <p>Borderless, transparent, click-through, always-on-top browser windows for streaming. For
@@ -61,7 +61,7 @@
         https://raw.githubusercontent.com/hperrin/stream-overlay/7fdbcf404e78c46e976837834c41ab960e734a45/screenshots/overlays.png</image>
       <caption>Twitch chat and alerts overlays showing on screen.</caption>
     </screenshot>
-    <screenshot type="default">
+    <screenshot>
       <image type="source">
         https://raw.githubusercontent.com/hperrin/stream-overlay/7fdbcf404e78c46e976837834c41ab960e734a45/screenshots/editor.png</image>
       <caption>The editor showing an open config file with overlays set up.</caption>
