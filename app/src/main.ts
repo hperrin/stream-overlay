@@ -496,7 +496,7 @@ const createHelpWindow = () => {
 
 const makeTray = () => {
   if (!tray) {
-    tray = new Tray(path.resolve(__dirname, '..', 'assets', 'logo.png'));
+    tray = new Tray(path.resolve(__dirname, '..', 'assets', 'tray@2x.png'));
     tray.setToolTip('Stream Overlay');
   }
   const contextMenu = Menu.buildFromTemplate([

@@ -9,8 +9,8 @@
     "resolveJsonModule": true,
     "rootDir": "app/src/",
     "declaration": true,
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "strict": true
   },
   "include": ["app/src/**/*"],
