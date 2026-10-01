@@ -17,6 +17,7 @@
     "electron": "^44.5.1"
   },
   "dependencies": {
-    "commander": "^15.0.0"
+    "commander": "^15.0.0",
+    "electron-settings": "^4.0.4"
   }
 }

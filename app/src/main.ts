@@ -16,6 +16,7 @@ import {
   WebContentsView,
 } from 'electron';
 import type { MenuItemConstructorOptions, MenuItem } from 'electron';
+import settings from 'electron-settings';
 
 // Needed until https://github.com/electron/electron/issues/46538 is fixed.
 app.commandLine.appendSwitch('gtk-version', '3');
@@ -132,6 +133,13 @@ let configEditorWindow: BrowserWindow | undefined;
 // Help window.
 let helpWindow: BrowserWindow | undefined;
 
+ipcMain.handle('getSettings', async (event) => {
+  event.sender.send('settings', await settings.get());
+});
+ipcMain.handle('saveSettings', async (event, sett) => {
+  await settings.set(sett);
+  event.sender.send('settings', sett);
+});
 ipcMain.handle('requestConfig', (event) => {
   const entry = wins.find(
     (entry) => event.sender === entry.handleView.webContents,

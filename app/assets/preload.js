@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   config: (callback) => ipcRenderer.on('config', callback),
   configFile: (callback) => ipcRenderer.on('configFile', callback),
   saved: (callback) => ipcRenderer.on('saved', callback),
+  settings: (data) => ipcRenderer.on('settings', data),
   requestFocusEvent: () => ipcRenderer.invoke('requestFocusEvent'),
   requestConfig: () => ipcRenderer.invoke('requestConfig'),
   requestClose: () => ipcRenderer.invoke('requestClose'),
@@ -14,4 +15,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestSave: (data) => ipcRenderer.invoke('requestSave', data),
   requestSaveAs: (data) => ipcRenderer.invoke('requestSaveAs', data),
   requestLaunch: (data) => ipcRenderer.invoke('requestLaunch', data),
+  getSettings: () => ipcRenderer.invoke('getSettings'),
+  saveSettings: (data) => ipcRenderer.invoke('saveSettings', data),
 });

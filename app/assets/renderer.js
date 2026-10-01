@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
       config.title || 'Stream Overlay';
   });
   window.electronAPI.requestConfig();
+  window.electronAPI.getSettings();
 
   document
     .getElementById('close')

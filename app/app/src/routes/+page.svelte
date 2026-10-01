@@ -127,6 +127,11 @@
   let activeIndex = $state(0);
   let activeConfig = $derived(configs[activeIndex]);
 
+  electronAPI.settings((_event, settings) => {
+    console.log('settings', settings);
+  });
+  electronAPI.getSettings();
+
   electronAPI.configFile((_event, data) => {
     const idx = configs.findIndex((check) => data.filename === check.filename);
 
